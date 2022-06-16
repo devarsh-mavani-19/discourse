@@ -2814,12 +2814,12 @@ zh_CN:
 
         您的帐户没有权限在该类别下发布新话题。如果您有异议，请[联系管理人员](%{base_url}/about)。
     email_reject_strangers_not_allowed:
-      title: "电子邮件被拒：不允许陌生人"
-      subject_template: "[%{email_prefix}] 电子邮件问题 - 无效访问"
-      text_body_template: |
-        抱歉，但是您向 %{destination}（名为 %{former_title}）发送的电子邮件未成功。
+      title: "Email被拒绝：不允许陌生人"
+      subject_template: "[%{email_prefix}] 邮件问题 -- 无效访问"
+      text_body_template: |+
+        我们非常抱歉，但是你发送至%{destination}（名为%{former_title}）的邮件出问题了。
 
-        您将此电子邮件发送到的类别仅允许来自使用有效帐户和已知电子邮件地址的用户的回复。如果您有异议，请[联系管理人员](%{base_url}/about)。
+        邮件发至的分类只接受来自合法帐户且邮件地址已确认的用户的有邮件。如果你有异议，联系管理人员。
     email_reject_invalid_post:
       title: "电子邮件被拒：无效帖子"
       subject_template: "[%{email_prefix}] 电子邮件问题 - 发帖错误"
