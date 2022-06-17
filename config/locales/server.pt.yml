@@ -482,27 +482,6 @@ pt:
     title: "Bem-vindo ao Discourse"
   lounge_welcome:
     title: "Bem-vindo ao Salão"
-    body: |2+
-
-      Parabéns! :confetti_ball:
-
-      Se consegue ver este tópico, então é porque foi recentemente promovido a **habitual** (Nível de Confiança 3).
-
-      Pode agora &hellip;
-
-      * Editar o título de qualquer tópico
-      * Modificar a categoria de qualquer tópico
-      * Ter todas as suas hiperligações a serem seguidas ([nãoseguimento automático](http://en.wikipedia.org/wiki/Nofollow) é removido)
-      * Aceder a um salão privado de categorias, apenas visível a utilizadores com Nível de Confiança 3 ou superior
-      * Esconder spam com uma única sinalização
-
-      Aqui está a [lista actual de membros habituais](/badges/3/regular). Certifique-se que diz olá.
-
-      Obrigado por ser uma parte importante na nossa comunidade!
-
-      (Para mais informação acerca dos Níveis de Confiança, [veja este tópico][confiança]. Por favor tenha conhecimento que apenas membros que continuam a corresponder aos requisitos ao longo do tempo, irão manter-se habituais.)
-
-      [confiança]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924
   category:
     topic_prefix: "Acerca da categoria %{category}"
     post_template: "%{replace_paragraph}\n\nUtilize os seguintes parágrafos para uma descrição mais longa, ou para estabelecer orientações ou regras da categoria:\n\n- Porque devem as pessoas utilizar esta categoria? Para que serve?\n\n- No que difere ao certo em relação às outras categorias que já temos?\n\n- O que devem conter, de maneira geral, os tópicos desta categoria?\n\n- Precisamos desta categoria? Podemos uni-la com outra categoria, ou subcategoria?\n"
@@ -1562,20 +1541,7 @@ pt:
       title: "Exportação de CSV falhou"
       subject_template: "A exportação dos dados falhou"
     email_reject_inactive_user:
-      text_body_template: |
-        Pedimos desculpa mas a sua mensagem de email para %{destination} (intitulada %{former_title}) não funcionou.
-
-        A sua conta associada com este email não está activa. Por favor active a sua conta antes de enviar emails.
-    email_reject_blocked_user:
-      text_body_template: |+
-        Pedimos desculpa mas a sua mensagem de email para %{destination} (intitulada %{former_title}) não funcionou.
-
-        A sua conta associada com este endereço de email foi bloqueada.
-    email_reject_reply_user_not_matching:
-      text_body_template: |+
-        Pedimos desculpa mas a sua mensagem de email para %{destination} (intitulada %{former_title}) não funcionou.
-
-        A sua resposta foi enviada de um email diferente daquele que esperávamos, por esta razão não temos a certeza que seja a mesma pessoa. Tente enviar de outro endereço de email ou contacte um membro da equipa de apoio.
+      text_body_template: |2
 
         Pedimos desculpa mas a sua mensagem de email para %{destination} (intitulada %{former_title}) não funcionou.
 

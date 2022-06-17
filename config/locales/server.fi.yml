@@ -2627,7 +2627,14 @@ fi:
       text_body_template: |
         Sähköpostin lähettäminen kohteeseen %{destination} (otsikolla %{former_title}) ei onnistunut.
 
-        Viestisi lähetettiin estetystä sähköpostiosoitteesta. Yritä lähettää viesti toisesta sähköpostiosoitteesta tai ota yhteyttä henkilökuntaan.
+        Vastauksesi lähetettiin estetystä sähköpostiosoitteesta. Yritä lähettää viesti toisesta sähköpostiosoitteesta tai [ota yhteyttä henkilökuntaan](%{base_url}/about).
+    email_reject_not_allowed_email:
+      title: "Sähköposti hylätty - osoite ei sallittu"
+      subject_template: "[%{email_prefix}] Sähköpostiongelma -- Estetty osoite"
+      text_body_template: |
+        Pahoittelemme, mutta sähköpostin lähettäminen tänne %{destination} (otsikolla %{former_title}) ei onnistunut.
+
+        Vastauksesi on peräisin estetystä sähköpostiosoitteesta. Kokeile lähettää toisesta sähköpostiosoitteesta tai [ota yhteyttä henkilökuntaan](%{base_url}/about).
     email_reject_inactive_user:
       title: "Sähköposti hylätty – aktivoimaton käyttäjä"
       subject_template: "[%{email_prefix}] Sähköpostiongelma -- aktivoimaton käyttäjä"

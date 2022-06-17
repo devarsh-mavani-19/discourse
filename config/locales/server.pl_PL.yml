@@ -506,8 +506,8 @@ pl_PL:
 
       - Postaraj się umieścić słowa kluczowe w tytule, dzięki czemu inni będą mogli łatwo *wyszukać* temat. Przypisz go do kategorii o pokrewnej tematyce.
 
-      Aby dowiedzieć się więcej, [zobacz przewodnik społeczności](/guidelines). Ten panel pojawi się tylko przy pierwszym %{education_posts_text}.
-    new-reply: |
+      Aby dowiedzieć się więcej, [zobacz przewodnik społeczności](%{base_path}/guidelines). Ten panel pojawi się tylko przy pierwszym %{education_posts_text}.
+    "new-reply": |
       Witaj na %{site_name} &mdash; **dziękujemy za zaangażowanie!**
 
       - Czy twoja odpowiedź wnosi coś pozytywnego do dyskusji?

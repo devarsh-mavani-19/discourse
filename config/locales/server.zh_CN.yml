@@ -2816,10 +2816,10 @@ zh_CN:
     email_reject_strangers_not_allowed:
       title: "Email被拒绝：不允许陌生人"
       subject_template: "[%{email_prefix}] 邮件问题 -- 无效访问"
-      text_body_template: |+
-        我们非常抱歉，但是你发送至%{destination}（名为%{former_title}）的邮件出问题了。
+      text_body_template: |
+        我们非常抱歉，但是你发送至%{destination}（标题为%{former_title}）无效。
 
-        邮件发至的分类只接受来自合法帐户且邮件地址已确认的用户的有邮件。如果你有异议，联系管理人员。
+        邮件所发送的分类只接受来自拥有邮箱地址的有效账户的回复。如果你认为这是一个错误，[联系管理人员](%{base_url}/about)。
     email_reject_invalid_post:
       title: "电子邮件被拒：无效帖子"
       subject_template: "[%{email_prefix}] 电子邮件问题 - 发帖错误"
