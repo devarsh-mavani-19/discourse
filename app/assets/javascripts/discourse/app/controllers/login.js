@@ -219,10 +219,15 @@ export default Controller.extend(ModalFunctionality, {
 
             const destinationUrl = cookie("destination_url");
             const ssoDestinationUrl = cookie("sso_destination_url");
-
             applyHiddenFormInputValue(this.loginName, "username");
             applyHiddenFormInputValue(this.loginPassword, "password");
 
+            const shouldRedirect = window.location.search.includes("sso=")
+            const query = window.location.search
+            if (shouldRedirect) {
+              window.location.assign("http://localhost:8888/community/login");
+              return;
+            }
             if (ssoDestinationUrl) {
               removeCookie("sso_destination_url");
               window.location.assign(ssoDestinationUrl);

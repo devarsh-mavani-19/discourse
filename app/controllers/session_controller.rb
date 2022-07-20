@@ -39,7 +39,6 @@ class SessionController < ApplicationController
 
   def sso_provider(payload = nil, confirmed_2fa_during_login = false)
     raise Discourse::NotFound unless SiteSetting.enable_discourse_connect_provider
-
     result = run_second_factor!(
       SecondFactor::Actions::DiscourseConnectProvider,
       payload: payload,
@@ -55,11 +54,15 @@ class SessionController < ApplicationController
       end
 
       if data[:no_current_user]
-        cookies[:sso_payload] = payload || request.query_string
-        redirect_to path('/login')
+        print "USER NOT FOUND"
+        cookies[:sso_payload2] = payload || request.query_string
+        redirect_to path('/login?'+(payload || request.query_string))
         return
       end
-
+      # if pay = cookies.delete(:sso_payload)
+      #   print "USER FOUND"
+      # end
+      
       if request.xhr?
         # for the login modal
         cookies[:sso_destination_url] = data[:sso_redirect_url]
