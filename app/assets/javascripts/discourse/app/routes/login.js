@@ -6,10 +6,14 @@ const LoginRoute = buildStaticRoute("login");
 
 LoginRoute.reopen({
   beforeModel() {
+    
     if (!this.siteSettings.login_required) {
-      this.replaceWith(`/${defaultHomepage()}`).then((e) => {
-        next(() => e.send("showLogin"));
-      });
+      var that = this
+      next(() => that.send("showLogin"));
+      // this.replaceWith(`/${defaultHomepage()}${query}`).then((e) => {
+      //   window.location.search = query
+      //   next(() => e.send("showLogin"));
+      // });
     }
   },
 });

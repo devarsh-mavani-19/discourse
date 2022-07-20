@@ -1091,7 +1091,7 @@ class UsersController < ApplicationController
           return redirect_to(wizard_path)
         elsif destination_url.present?
           return redirect_to(destination_url, allow_other_host: true)
-        elsif SiteSetting.enable_discourse_connect_provider && payload = cookies.delete(:sso_payload)
+        elsif SiteSetting.enable_discourse_connect_provider && payload = cookies.delete(:sso_payload2)
           return redirect_to(session_sso_provider_url + "?" + payload)
         end
       else
