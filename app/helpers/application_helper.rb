@@ -20,7 +20,7 @@ module ApplicationHelper
       modulePrefix: "discourse",
       environment: Rails.env,
       rootURL: Discourse.base_path,
-      locationType: "auto",
+      locationType: "history",
       historySupportMiddleware: false,
       EmberENV: {
         FEATURES: {},
@@ -125,22 +125,17 @@ module ApplicationHelper
       path = path.gsub("#{GlobalSetting.cdn_url}/assets/", "#{GlobalSetting.cdn_url}/brotli_asset/")
     end
 
-    if Rails.env == "development"
-      if !path.include?("?")
-        # cache breaker for mobile iOS
-        path = path + "?#{Time.now.to_f}"
-      end
-    end
-
     path
   end
 
-  def preload_script(script)
-    script = EmberCli.transform_name(script)
+  def self.splash_screen_nonce
+    @splash_screen_nonce ||= SecureRandom.hex
+  end
 
+  def preload_script(script)
     scripts = [script]
 
-    if EmberCli.enabled? && chunks = EmberCli.script_chunks[script]
+    if chunks = EmberCli.script_chunks[script]
       scripts.push(*chunks)
     end
 
@@ -153,7 +148,7 @@ module ApplicationHelper
   def preload_script_url(url)
     <<~HTML.html_safe
       <link rel="preload" href="#{url}" as="script">
-      <script src="#{url}"></script>
+      <script defer src="#{url}"></script>
     HTML
   end
 
@@ -269,6 +264,13 @@ module ApplicationHelper
     opts ||= {}
     opts[:url] ||= "#{Discourse.base_url_no_prefix}#{request.fullpath}"
 
+    # if slug generation method is encoded, non encoded urls can sneak in
+    # via bots
+    url = opts[:url]
+    if url.encoding.name != "UTF-8" || !url.valid_encoding?
+      opts[:url] = url.dup.force_encoding("UTF-8").scrub!
+    end
+
     if opts[:image].blank?
       twitter_summary_large_image_url = SiteSetting.site_twitter_summary_large_image_url
 
@@ -284,12 +286,12 @@ module ApplicationHelper
     opts[:twitter_summary_large_image] =
       get_absolute_image_url(opts[:twitter_summary_large_image]) if opts[:twitter_summary_large_image].present?
 
-    # Add opengraph & twitter tags
     result = []
     result << tag(:meta, property: 'og:site_name', content: SiteSetting.title)
     result << tag(:meta, property: 'og:type', content: 'website')
 
-    result = generate_twitter_card_metadata(opts, result)
+    generate_twitter_card_metadata(result, opts)
+
     result << tag(:meta, property: "og:image", content: opts[:image]) if opts[:image].present?
 
     [:url, :title, :description].each do |property|
@@ -318,7 +320,7 @@ module ApplicationHelper
     result.join("\n")
   end
 
-  def generate_twitter_card_metadata(opts, result)
+  private def generate_twitter_card_metadata(result, opts)
     img_url = opts[:twitter_summary_large_image].present? ? \
       opts[:twitter_summary_large_image] :
       opts[:image]
@@ -337,8 +339,6 @@ module ApplicationHelper
     else
       result << tag(:meta, name: 'twitter:card', content: "summary")
     end
-
-    result
   end
 
   def render_sitelinks_search_tag
@@ -429,6 +429,11 @@ module ApplicationHelper
     # argument only makes sense for DiscourseHub app
     SiteSetting.ios_app_id == "1173672076" ?
       ", app-argument=discourse://new?siteUrl=#{Discourse.base_url}" : ""
+  end
+
+  def include_splash_screen?
+    # A bit basic for now but will be expanded later
+    SiteSetting.splash_screen
   end
 
   def allow_plugins?
@@ -563,6 +568,19 @@ module ApplicationHelper
     )
   end
 
+  def discourse_stylesheet_preload_tag(name, opts = {})
+    manager =
+      if opts.key?(:theme_id)
+        Stylesheet::Manager.new(
+          theme_id: customization_disabled? ? nil : opts[:theme_id]
+        )
+      else
+        stylesheet_manager
+      end
+
+    manager.stylesheet_preload_tag(name, 'all')
+  end
+
   def discourse_stylesheet_link_tag(name, opts = {})
     manager =
       if opts.key?(:theme_id)
@@ -574,6 +592,17 @@ module ApplicationHelper
       end
 
     manager.stylesheet_link_tag(name, 'all')
+  end
+
+  def discourse_preload_color_scheme_stylesheets
+    result = +""
+    result << stylesheet_manager.color_scheme_stylesheet_preload_tag(scheme_id, 'all')
+
+    if dark_scheme_id != -1
+      result << stylesheet_manager.color_scheme_stylesheet_preload_tag(dark_scheme_id, '(prefers-color-scheme: dark)')
+    end
+
+    result.html_safe
   end
 
   def discourse_color_scheme_stylesheets

@@ -542,6 +542,7 @@ ca:
       forever: "Sempre"
       relative: "Temps relatiu"
       none: "No cal cap"
+      never: "Mai"
       custom: "Data i hora personalitzades"
       select_timeframe: "Seleccioneu un període de temps"
     user_action:
@@ -911,6 +912,8 @@ ca:
       external_links_in_new_tab: "Obre tots els enllaços externs en una pestanya nova"
       enable_quoting: "Permet citar la resposta en el text destacat"
       enable_defer: "Habilita l'ajornament per a marcar temes no llegits"
+      experimental_sidebar:
+        options: "Opcions"
       change: "canvia"
       featured_topic: "Tema destacat"
       moderator: "%{user} és un moderador"
@@ -952,7 +955,7 @@ ca:
       muted_categories: "Silenciat"
       muted_categories_instructions: "No us notificarem res sobre temes nous en aquestes categories, i no apareixeran en les pàgines de categories o de més recents."
       muted_categories_instructions_dont_hide: "No sereu notificat de res sobre temes nous en aquestes categories."
-      regular_categories: "Habitual"
+      regular_categories: "Normal"
       regular_categories_instructions: "Veureu aquestes categories en les llistes de temes \"Darrers\" i \"Principals\"."
       no_category_access: "Com a moderador teniu accés limitat a la categoria. Desar està inhabilitat."
       delete_account: "Suprimeix el meu compte"
@@ -1390,10 +1393,8 @@ ca:
       other: respostes
     signup_cta:
       sign_up: "Registre"
-      hide_session: "Recorda-m'ho demà"
       hide_forever: "no, gràcies"
       intro: "Bon dia! Sembla que gaudiu de la discussió, però no heu registrat un compte."
-      value_prop: "Quan creeu un compte, recordem exactament el que heu llegit, de manera que sempre torneu allà on ho vau deixar. També rebreu notificacions, ací i via correu, quan algú us respon. I podeu dir que us agraden les publicacions per a compartir l'amor. :heartpulse:"
     summary:
       enabled_description: "Ara veieu un resum del tema: les publicacions més interessants segons la comunitat."
       enable: "Resumeix aquest tema"
@@ -1609,7 +1610,6 @@ ca:
       create_whisper: "Xiuxiueig"
       create_shared_draft: "Crea un esborrany compartit"
       edit_shared_draft: "Edita l'esborrany compartit"
-      users_placeholder: "Afegeix un usuari"
       title_placeholder: "De què tracta aquesta discussió (en una frase curta)?"
       title_or_link_placeholder: "Escriviu aquí el títol o enganxeu-hi un enllaç"
       edit_reason_placeholder: "per què ho editeu?"
@@ -1695,6 +1695,7 @@ ca:
       empty: "No hi ha notificacions."
       post_approved: "La vostra publicació ha estat aprovada"
       reviewable_items: "elements que requereixen revisió"
+      watching_first_post_label: "Tema nou"
       mentioned: "<span>%{username}</span> %{description}"
       group_mentioned: "<span>%{username}</span> %{description}"
       quoted: "<span>%{username}</span> %{description}"
@@ -1707,6 +1708,10 @@ ca:
       liked_many:
         one: "<span class='multi-user'>%{username}, %{username2} i %{count} altre</span> %{description}"
         other: "<span class='multi-user'>%{username}, %{username2} i %{count} altres</span> %{description}"
+      liked_by_2_users: "%{username}, %{username2}"
+      liked_by_multiple_users:
+        one: "%{username}, %{username2} i %{count} altre"
+        other: "%{username}, %{username2} i %{count} altres"
       liked_consolidated_description:
         one: "li agrada %{count} de les vostres publicacions"
         other: " %{count} de les vostres publicacions té 'M'agrada'"
@@ -2672,6 +2677,7 @@ ca:
       full: "Crea / Respon / Mira"
       create_post: "Respon / Mira"
       readonly: "Mira"
+    preloader_text: "Carregant"
     lightbox:
       download: "descarrega"
       previous: "Anterior (tecla de fletxa esquerra)"
@@ -2738,7 +2744,6 @@ ca:
         edit: "%{shortcut} Edita la publicació"
         delete: "%{shortcut} Suprimeix la publicació"
         mark_muted: "%{shortcut} Silencia el tema"
-        mark_regular: "%{shortcut} Tema normal (per defecte)"
         mark_tracking: "%{shortcut} Segueix el tema"
         mark_watching: "%{shortcut} Vigila el tema"
         print: "%{shortcut} Imprimeix el tema"
@@ -2826,7 +2831,7 @@ ca:
           title: "Seguint"
           description: "Seguireu automàticament tots els temes amb aquesta etiqueta. A la vora del tema apareixerà un recompte de publicacions no llegides i noves."
         regular:
-          title: "Habitual"
+          title: "Normal"
           description: "Rebreu alertes si una persona menciona el vostre @nom o respon a la vostra publicació."
         muted:
           title: "Silenciat"
@@ -2880,18 +2885,40 @@ ca:
       no_replies_others: "No hi ha respostes."
       no_likes_others: "Publicacions sense 'm'agrada'."
     sidebar:
-      unread_count: "%{count} no llegit"
-      new_count: "%{count} nou"
+      unread_count:
+        one: "%{count} no llegit"
+        other: "%{count} no llegits"
+      new_count:
+        one: "%{count} nou"
+        other: "%{count} nous"
       sections:
+        messages:
+          header_link_text: "Missatges"
+          links:
+            inbox: "Safata d'entrada"
+            sent: "Enviat"
+            new: "Nous"
+            new_with_count: "Nou (%{count})"
+            unread: "No llegits"
+            unread_with_count: "No llegit (%{count})"
+            archive: "Arxiva"
+        tags:
+          header_link_title: "totes les etiquetes"
+          header_link_text: "Etiquetes"
         categories:
           header_link_title: "totes les categories"
           header_link_text: "Categories"
-        topics:
+        community:
           header_link_title: "pàgina principal"
-          header_link_text: "Temes"
+          header_link_text: "Comunitat"
           links:
             tracked:
               content: "Seguit"
+            groups:
+              content: "Grups"
+              title: "Tots els grups"
+            users:
+              content: "Usuaris"
             my_posts:
               content: "Les meves publicacions"
   admin_js:

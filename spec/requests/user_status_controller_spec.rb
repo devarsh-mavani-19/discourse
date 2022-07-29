@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe UserStatusController do
+RSpec.describe UserStatusController do
   describe '#set' do
     it 'requires user to be logged in' do
       put "/user-status.json", params: { description: "off to dentist" }
@@ -25,36 +25,85 @@ describe UserStatusController do
         SiteSetting.enable_user_status = true
       end
 
-      it "sets user status" do
-        status = "off to dentist"
-        put "/user-status.json", params: { description: status }
-        expect(user.user_status.description).to eq(status)
+      it 'the description parameter is mandatory' do
+        put "/user-status.json", params: { emoji: "tooth" }
+        expect(response.status).to eq(400)
       end
 
-      it 'the description parameter is mandatory' do
-        put "/user-status.json", params: {}
+      it 'the emoji parameter is mandatory' do
+        put "/user-status.json", params: { description: "off to dentist" }
         expect(response.status).to eq(400)
+      end
+
+      it "sets user status" do
+        status = "off to dentist"
+        status_emoji = "tooth"
+        ends_at = DateTime.parse("2100-01-01 18:00")
+
+        put "/user-status.json", params: {
+          description: status,
+          emoji: status_emoji,
+          ends_at: ends_at
+        }
+
+        expect(response.status).to eq(200)
+        expect(user.user_status.description).to eq(status)
+        expect(user.user_status.emoji).to eq(status_emoji)
+        expect(user.user_status.ends_at).to eq_time(ends_at)
       end
 
       it "following calls update status" do
         status = "off to dentist"
-        put "/user-status.json", params: { description: status }
+        status_emoji = "tooth"
+        ends_at = DateTime.parse("2100-01-01 18:00")
+        put "/user-status.json", params: {
+          description: status,
+          emoji: status_emoji,
+          ends_at: ends_at
+        }
+        expect(response.status).to eq(200)
+
         user.reload
         expect(user.user_status.description).to eq(status)
+        expect(user.user_status.emoji).to eq(status_emoji)
+        expect(user.user_status.ends_at).to eq_time(ends_at)
 
-        new_status = "working"
-        put "/user-status.json", params: { description: new_status }
+        new_status = "surfing"
+        new_status_emoji = "surfing_man"
+        new_ends_at = DateTime.parse("2100-01-01 18:59")
+        put "/user-status.json", params: {
+          description: new_status,
+          emoji: new_status_emoji,
+          ends_at: new_ends_at
+        }
+        expect(response.status).to eq(200)
+
         user.reload
         expect(user.user_status.description).to eq(new_status)
+        expect(user.user_status.emoji).to eq(new_status_emoji)
+        expect(user.user_status.ends_at).to eq_time(new_ends_at)
       end
 
       it "publishes to message bus" do
         status = "off to dentist"
-        messages = MessageBus.track_publish { put "/user-status.json", params: { description: status } }
+        emoji = "tooth"
+        ends_at = "2100-01-01T18:00:00Z"
+
+        messages = MessageBus.track_publish do
+          put "/user-status.json", params: {
+            description: status,
+            emoji: emoji,
+            ends_at: ends_at
+          }
+        end
 
         expect(messages.size).to eq(1)
-        expect(messages[0].channel).to eq("/user-status/#{user.id}")
-        expect(messages[0].data[:description]).to eq(status)
+        expect(messages[0].channel).to eq("/user-status")
+        expect(messages[0].group_ids).to eq([Group::AUTO_GROUPS[:trust_level_0]])
+
+        expect(messages[0].data[user.id][:description]).to eq(status)
+        expect(messages[0].data[user.id][:emoji]).to eq(emoji)
+        expect(messages[0].data[user.id][:ends_at]).to eq(ends_at)
       end
     end
   end
@@ -86,6 +135,7 @@ describe UserStatusController do
 
       it "clears user status" do
         delete "/user-status.json"
+        expect(response.status).to eq(200)
 
         user.reload
         expect(user.user_status).to be_nil
@@ -95,8 +145,10 @@ describe UserStatusController do
         messages = MessageBus.track_publish { delete "/user-status.json" }
 
         expect(messages.size).to eq(1)
-        expect(messages[0].channel).to eq("/user-status/#{user.id}")
-        expect(messages[0].data).to eq(nil)
+        expect(messages[0].channel).to eq("/user-status")
+        expect(messages[0].group_ids).to eq([Group::AUTO_GROUPS[:trust_level_0]])
+
+        expect(messages[0].data[user.id]).to eq(nil)
       end
     end
   end

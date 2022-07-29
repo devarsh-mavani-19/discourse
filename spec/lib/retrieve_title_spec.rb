@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe RetrieveTitle do
+RSpec.describe RetrieveTitle do
 
   context "extract_title" do
 
@@ -152,7 +152,7 @@ describe RetrieveTitle do
     it "it ignores Net::ReadTimeout errors" do
       stub_request(:get, "https://example.com").to_raise(Net::ReadTimeout)
 
-      expect { RetrieveTitle.crawl("https://example.com") }.not_to raise_error(Net::ReadTimeout)
+      expect { RetrieveTitle.crawl("https://example.com") }.not_to raise_error
     end
   end
 

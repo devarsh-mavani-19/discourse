@@ -1,5 +1,6 @@
 import Component from "@ember/component";
 import cookie from "discourse/lib/cookie";
+import { bind } from "discourse-common/utils/decorators";
 
 export default Component.extend({
   classNames: ["create-account-body"],
@@ -21,6 +22,7 @@ export default Component.extend({
     }
   },
 
+  @bind
   actionOnEnter(event) {
     if (!this.disabled && event.key === "Enter") {
       event.preventDefault();
@@ -30,6 +32,7 @@ export default Component.extend({
     }
   },
 
+  @bind
   selectKitFocus(event) {
     const target = document.getElementById(event.target.getAttribute("for"));
     if (target?.classList.contains("select-kit")) {
@@ -48,9 +51,8 @@ export default Component.extend({
     let userTextFields = document.getElementsByClassName("user-fields")[0];
 
     if (userTextFields) {
-      userTextFields = userTextFields.getElementsByClassName(
-        "ember-text-field"
-      );
+      userTextFields =
+        userTextFields.getElementsByClassName("ember-text-field");
     }
 
     if (userTextFields) {
@@ -73,9 +75,8 @@ export default Component.extend({
     let userTextFields = document.getElementsByClassName("user-fields")[0];
 
     if (userTextFields) {
-      userTextFields = userTextFields.getElementsByClassName(
-        "ember-text-field"
-      );
+      userTextFields =
+        userTextFields.getElementsByClassName("ember-text-field");
     }
 
     if (userTextFields) {

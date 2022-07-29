@@ -438,6 +438,7 @@ th:
       next_week: "สัปดาห์หน้า"
       next_month: "เดือนหน้า"
       forever: "ตลอดไป"
+      never: "ไม่เคย"
       custom: "วันและเวลาที่กำหนดเอง"
     user_action:
       user_posted_topic: "<a href='%{userUrl}'>%{user}</a> โพสต์ <a href='%{topicUrl}'>กระทู้</a>"
@@ -762,6 +763,8 @@ th:
       allow_private_messages: "อนุญาตให้ผู้ใช้อื่นส่งข้อความส่วนตัวหาฉัน"
       external_links_in_new_tab: "เปิดลิงก์ภายนอกทั้งหมดในแท็บใหม่"
       enable_quoting: "เปิดการตอบกลับการอ้างอิงโดยไฮไลท์ข้อความ"
+      experimental_sidebar:
+        options: "ตัวเลือก"
       change: "เปลี่ยนแปลง"
       featured_topic: "กระทู้เด่น"
       moderator: "%{user} เป็นผู้ดูแลระบบ"
@@ -792,7 +795,7 @@ th:
       watched_first_post_categories: "กำลังดูโพสต์แรก"
       watched_first_post_tags: "กำลังดูโพสต์แรก"
       muted_categories: "ปิดเสียง"
-      regular_categories: "ทั่วไป"
+      regular_categories: "ปกติ"
       delete_account: "ลบบัญชีของฉัน"
       delete_account_confirm: "คุณแน่ใจไหมที่จะลบบัญชีอย่างถาวร การดำเนินการนี้ไม่สามารถยกเลิกได้"
       deleted_yourself: "บัญชีของคุณถูกลบเรียบร้อยแล้ว"
@@ -1180,7 +1183,6 @@ th:
       other: ตอบ
     signup_cta:
       sign_up: "สมัครสมาชิก"
-      hide_session: "เตือนฉันพรุ่งนี้"
       hide_forever: "ไม่เป็นไร"
     summary:
       enabled_description: "คุณกำลังดูสรุปของกระทู้นี้ : นี่คือโพสที่น่าสนใจที่สุดที่หลายๆคนแนะนำ"
@@ -1312,8 +1314,6 @@ th:
         other: "คุณสามารถเลือกได้ %{count} รายการเท่านั้น"
       min_content_not_reached:
         other: "เลือกอย่างน้อย %{count} รายการ"
-      invalid_selection_length:
-        other: "การเลือกต้องมีอย่างน้อย %{count} ตัวอักษร"
     date_time_picker:
       from: จาก
       to: ถึง
@@ -1374,7 +1374,6 @@ th:
       cancel: "ยกเลิก"
       create_topic: "สร้างกระทู้"
       create_pm: "ข้อความ"
-      users_placeholder: "เพิ่มผู้ใช้"
       title_placeholder: "บทสนทนานี้เกี่ยวกับอะไร ขอสั้นๆ 1 ประโยค"
       title_or_link_placeholder: "พิมพ์หัวข้อ หรือวางลิงก์ที่นี่"
       edit_reason_placeholder: "ทำไมคุณถึงแก้ไข"
@@ -1450,6 +1449,7 @@ th:
       none: "ไม่สามารถโหลดการแจ้งเตือนได้ในขณะนี้"
       empty: "ไม่พบการแจ้งเตือน"
       post_approved: "โพสต์ของคุณได้รับการอนุมัติ"
+      watching_first_post_label: "กระทู้ใหม่"
       mentioned: "<span>%{username}</span>%{description}"
       group_mentioned: "<span>%{username}</span>%{description}"
       quoted: "<span>%{username}</span>%{description}"
@@ -2256,6 +2256,7 @@ th:
       full: "สร้าง / ตอบ / ดู"
       create_post: "ตอบ / ดู"
       readonly: "ดู"
+    preloader_text: "กำลังโหลด"
     lightbox:
       download: "ดาวน์โหลด"
       close: "ปิด (Esc)"
@@ -2323,7 +2324,6 @@ th:
         edit: "%{shortcut} แก้ไขโพสต์"
         delete: "%{shortcut} ลบโพสต์"
         mark_muted: "%{shortcut} ปิดการแจ้งเตือนกระทู้"
-        mark_regular: "%{shortcut} หัวข้อ ทั่วไป (มาตราฐาน)"
         mark_tracking: "%{shortcut} ติดตามกระทู้"
         mark_watching: "%{shortcut} ดูกระทู้"
         print: "%{shortcut}พิมพ์กระทู้"
@@ -2392,7 +2392,7 @@ th:
         tracking:
           title: "กำลังติดตาม"
         regular:
-          title: "ทั่วไป"
+          title: "ปกติ"
         muted:
           title: "ปิด"
       groups:
@@ -2425,18 +2425,38 @@ th:
         member: "สมาชิก"
         regular: "ทั่วไป"
     sidebar:
-      unread_count: "%{count} ยังไม่อ่าน"
-      new_count: "%{count} ใหม่"
+      unread_count:
+        other: "%{count} ยังไม่อ่าน"
+      new_count:
+        other: "%{count} ใหม่"
       sections:
+        messages:
+          header_link_text: "ข้อความ"
+          links:
+            inbox: "กล่องข้อความ"
+            sent: "ส่ง"
+            new: "ใหม่"
+            new_with_count: "ใหม่ (%{count})"
+            unread: "ยังไม่อ่าน"
+            unread_with_count: "ยังไม่อ่าน (%{count})"
+            archive: "คลัง"
+        tags:
+          header_link_title: "แท็กทั้งหมด"
+          header_link_text: "ป้าย"
         categories:
           header_link_title: "ทุกหมวดหมู่"
           header_link_text: "หมวดหมู่"
-        topics:
+        community:
           header_link_title: "หน้าแรก"
-          header_link_text: "กระทู้"
+          header_link_text: "ชุมชน"
           links:
             tracked:
               content: "ติดตาม"
+            groups:
+              content: "กลุ่ม"
+              title: "กลุ่มทั้งหมด"
+            users:
+              content: "ผู้ใช้"
             my_posts:
               content: "โพสต์ของฉัน"
               draft_count:

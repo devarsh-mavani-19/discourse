@@ -570,6 +570,7 @@ sl:
       forever: "Za vedno"
       relative: "Relativni čas"
       none: "Brez opomnika"
+      never: "Nikoli"
       custom: "Izberi datum in čas"
       select_timeframe: "Izberi časovni okvir"
     user_action:
@@ -1015,6 +1016,8 @@ sl:
       external_links_in_new_tab: "Odpri vse zunanje povezave v novem zavihku"
       enable_quoting: "Omogoči odgovarjanje s citiranjem za poudarjen tekst"
       enable_defer: "Omogoči preloži za označiti teme kot neprebrane"
+      experimental_sidebar:
+        options: "Možnosti"
       change: "spremeni"
       featured_topic: "Izpostavljena tema"
       moderator: "%{user} je moderator"
@@ -1056,7 +1059,7 @@ sl:
       muted_categories: "Utišano"
       muted_categories_instructions: "Nikoli ne boste obveščeni o novih temah v tej kategoriji in ne bodo se prikazovale med najnovejšimi."
       muted_categories_instructions_dont_hide: "Ne boste obveščeni o ničemer o novimi temami v teh kategorijah"
-      regular_categories: "Običajne"
+      regular_categories: "Običajno"
       regular_categories_instructions: "Te kategorije boste videli na seznamih tem \"Najnovejše\" in \"Najboljše\"."
       no_category_access: "Kot moderator imaš omejen dostop do kategorije, shranjevanje je onemogočeno"
       delete_account: "Izbriši moj račun"
@@ -1574,10 +1577,8 @@ sl:
       other: odgovorov
     signup_cta:
       sign_up: "Registracija"
-      hide_session: "Spomni me jutri"
       hide_forever: "ne, hvala"
       intro: "Pozdravljeni! Vidimo, da uživate v branju razprave, vendar se še niste registrirali kot uporabnik."
-      value_prop: "Ko registrirate uporabniški račun, si lahko zapomnimo točno kaj ste že prebrali, tako da boste naslednjič lahko nadaljevali od tam, kjer ste končali. Lahko boste tudi prejemali obvestila, tukaj ali preko e-sporočila vsakič, ko vam nekdo odgovori. In lahko boste všečkali prispevke, ki so vam všeč. :heartpulse:"
     summary:
       enabled_description: "Ogledujete si povzetek teme: najbolj zanimive prispevke, kot jih je določila skupnost."
       description:
@@ -1840,7 +1841,6 @@ sl:
       create_whisper: "Šepet"
       create_shared_draft: "Ustvari skupni osnutek"
       edit_shared_draft: "Uredi skupni osnutek"
-      users_placeholder: "Dodaj uporabnika"
       title_placeholder: "Kaj je tema prispevka v kratkem stavku?"
       title_or_link_placeholder: "vpiši naslov ali prilepi povezavo"
       edit_reason_placeholder: "zakaj spreminjate prispevek?"
@@ -1934,6 +1934,7 @@ sl:
       empty: "Ni obvestil."
       post_approved: "Vaš prispevek je bil odobren"
       reviewable_items: "čakajo na pregled"
+      watching_first_post_label: "Nova tema"
       mentioned: "<span>%{username}</span> %{description}"
       group_mentioned: "<span>%{username}</span> %{description}"
       quoted: "<span>%{username}</span> %{description}"
@@ -1948,6 +1949,12 @@ sl:
         two: "<span class='multi-user'>%{username}, %{username2} in %{count} druga</span> %{description}"
         few: "<span class='multi-user'>%{username}, %{username2} in %{count} drugi</span> %{description}"
         other: "<span class='multi-user'>%{username}, %{username2} in %{count} drugih</span> %{description}"
+      liked_by_2_users: "%{username}, %{username2}"
+      liked_by_multiple_users:
+        one: "%{username}, %{username2} in %{count} drug"
+        two: "%{username}, %{username2} in %{count} druga"
+        few: "%{username}, %{username2} in %{count} drugi"
+        other: "%{username}, %{username2} in %{count} drugih"
       liked_consolidated_description:
         one: "je všečkal %{count} vaš prispevek"
         two: "je všečkal %{count} vaša prispevka"
@@ -3086,11 +3093,11 @@ sl:
         this_month: "Mesec"
         this_week: "Teden"
         today: "Danes"
-    browser_update: 'Na žalost je <a href="https://www.discourse.org/faq/#browser">vaš brskalnik prestar za uporabo te spletne strani</a>. Če si želite ogledati obogateno vsebino, se prijaviti in odgovarjati., prosim <a href="https://browsehappy.com">nadgradite svoj brskalnik</a>.'
     permission_types:
       full: "Ustvari / Odgovori / Vidi"
       create_post: "Odgovori / Vidi"
       readonly: "Vidi"
+    preloader_text: "Nalagam"
     lightbox:
       download: "prenesi"
       previous: "Predhodna (leva puščična tipka)"
@@ -3172,7 +3179,6 @@ sl:
         edit: "%{shortcut} Uredi prispevek"
         delete: "%{shortcut} Zbriši prispevek"
         mark_muted: "%{shortcut} Utišaj temo"
-        mark_regular: "%{shortcut} Običajna (privzeta) tema"
         mark_tracking: "%{shortcut} Sledi temi"
         mark_watching: "%{shortcut} Spremljaj temo"
         print: "%{shortcut} Natisni temo"
@@ -3371,20 +3377,47 @@ sl:
         regular: "redni uporabnik"
         leader: "vodja"
     sidebar:
-      unread_count: "%{count} neprebrana"
-      new_count: "%{count} nova"
+      unread_count:
+        one: "%{count} neprebrana"
+        two: "%{count} neprebrani"
+        few: "%{count} neprebrane"
+        other: "%{count} neprebranih"
+      new_count:
+        one: "%{count} nova"
+        two: "%{count} novi"
+        few: "%{count} nove"
+        other: "%{count} novih"
       sections:
+        messages:
+          header_link_text: "Sporočila"
+          links:
+            inbox: "Prejeto"
+            sent: "Poslano"
+            new: "Nove"
+            new_with_count: "Nova (%{count})"
+            unread: "Neprebrane"
+            unread_with_count: "Neprebrana (%{count})"
+            archive: "Arhiv"
+        tags:
+          header_link_title: "vse oznake"
+          header_link_text: "Oznake"
         categories:
           header_link_title: "vse kategorije"
           header_link_text: "Kategorije"
-        topics:
+        community:
           header_link_title: "domov"
-          header_link_text: "Teme"
+          header_link_text: "Skupnost"
           links:
             tracked:
               content: "Sledim"
+            groups:
+              content: "Skupine"
+              title: "Vse skupine"
+            users:
+              content: "Uporabniki"
             my_posts:
               content: "Moji prispevki"
+              title: "Moji prispevki"
   admin_js:
     type_to_filter: "vnesite za filter..."
     admin:

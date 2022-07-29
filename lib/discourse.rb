@@ -9,11 +9,6 @@ module Discourse
   DB_POST_MIGRATE_PATH ||= "db/post_migrate"
   REQUESTED_HOSTNAME ||= "REQUESTED_HOSTNAME"
 
-  require 'sidekiq/exception_handler'
-  class SidekiqExceptionHandler
-    extend Sidekiq::ExceptionHandler
-  end
-
   class Utils
     URI_REGEXP ||= URI.regexp(%w{http https})
 
@@ -168,7 +163,7 @@ module Discourse
     return if ex.class == Jobs::HandledExceptionWrapper
 
     context ||= {}
-    parent_logger ||= SidekiqExceptionHandler
+    parent_logger ||= Sidekiq
 
     cm = RailsMultisite::ConnectionManagement
     parent_logger.handle_exception(ex, {
@@ -1032,5 +1027,15 @@ module Discourse
 
   def self.allow_dev_populate?
     Rails.env.development? || ENV["ALLOW_DEV_POPULATE"] == "1"
+  end
+
+  # warning: this method is very expensive and shouldn't be called in places
+  # where performance matters. it's meant to be called manually (e.g. in the
+  # rails console) when dealing with an emergency that requires invalidating
+  # theme cache
+  def self.clear_all_theme_cache!
+    ThemeField.force_recompilation!
+    Theme.all.each(&:update_javascript_cache!)
+    Theme.expire_site_cache!
   end
 end

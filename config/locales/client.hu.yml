@@ -603,6 +603,7 @@ hu:
       forever: "Örökre"
       relative: "Relatív idő"
       none: "Nem szükséges"
+      never: "Soha"
       last_custom: "Legutóbbi egyéni dátum/idő"
       custom: "Egyéni dátum és idő"
       select_timeframe: "Válasszon egy időkeretet"
@@ -1084,6 +1085,8 @@ hu:
       external_links_in_new_tab: "Az összes külső hivatkozás megnyitása új lapon"
       enable_quoting: "A kijelölt szöveg idézése a válaszban"
       enable_defer: "A témák olvasatlannak jelölésének engedélyezése"
+      experimental_sidebar:
+        options: "Beállítások"
       change: "módosítás"
       featured_topic: "Kiemelt téma"
       moderator: "%{user} egy moderátor"
@@ -1126,7 +1129,7 @@ hu:
       muted_categories: "Némított"
       muted_categories_instructions: "Semmilyen értesítést nem fog kapni a kategória témaköreiről, és a kategóriák vagy a legújabbak között sem fog megjelenni."
       muted_categories_instructions_dont_hide: "Nem fog értesítést kapni az új témákról ezekben a kategóriákban."
-      regular_categories: "Átlagos"
+      regular_categories: "Normál"
       regular_categories_instructions: "Ezek a kategóriák a „Legújabb” és a „Legnépszerűbb” témák között lesznek láthatóak."
       no_category_access: "Moderátorként korlátozott kategória-hozzáférése van, a mentés tiltott."
       delete_account: "Saját fiók törlése"
@@ -1686,11 +1689,9 @@ hu:
       other: válasz
     signup_cta:
       sign_up: "Regisztráció"
-      hide_session: "Emlékeztessen holnap"
       hide_forever: "nem, köszönöm"
       hidden_for_session: "Rendben, holnap megkérdezzük. Bármikor használhatja a „Bejelentkezés” gombot, hogy fiókot készítsen magának."
       intro: "Üdv! Úgy tűnik, hogy tetszik Önnek a fórumunk, de még nem regisztrált fiókot."
-      value_prop: "Ha létrehoz egy fiókot, akkor a rendszer emlékezni fog arra, hogy mit olvasott, így mindig oda térhet vissza, ahol korábban abbahagyta. Értesítéseket is fog kapni, itt is és e-mailben is, valahányszor valaki válaszol Önnek. A bejegyzéseket pedig kedvelheti is. :heartpulse:"
     summary:
       enabled_description: "A téma összefoglalását látja: a legérdekesebb bejegyzéseket a közösség határozta meg."
       description:
@@ -1885,9 +1886,6 @@ hu:
       min_content_not_reached:
         one: "Válasszon legalább %{count} elemet."
         other: "Válasszon legalább %{count} elemet."
-      invalid_selection_length:
-        one: "A címnek legalább %{count} karakteresnek kell lennie"
-        other: "A címnek legalább %{count} karakteresnek kell lennie"
       components:
         categories_admin_dropdown:
           title: "Kategóriák kezelése"
@@ -1980,7 +1978,6 @@ hu:
       create_shared_draft: "Megosztott vázlat létrehozása"
       edit_shared_draft: "Megosztott vázlat szerkesztése"
       title: "Vagy nyomjon %{modifier}Entert"
-      users_placeholder: "Felhasználó hozzáadása"
       title_placeholder: "Mi lesz a témája ennek a beszélgetésnek egy rövid mondatban?"
       title_or_link_placeholder: "Írja be a címet, vagy illesszen be ide egy hivatkozást"
       edit_reason_placeholder: "miért szerkeszt?"
@@ -2081,6 +2078,7 @@ hu:
       empty: "Nem található értesítés."
       post_approved: "A bejegyzését jóváhagyták"
       reviewable_items: "felülvizsgálatot igénylő elemek"
+      watching_first_post_label: "Új téma"
       mentioned: "<span>%{username}</span> %{description}"
       group_mentioned: "<span>%{username}</span> %{description}"
       quoted: "<span>%{username}</span> %{description}"
@@ -2093,6 +2091,10 @@ hu:
       liked_many:
         one: "<span class='multi-user'>%{username}, %{username2} és még %{count} felhasználó</span> %{description}"
         other: "<span class='multi-user'>%{username}, %{username2} és még %{count} felhasználó</span> %{description}"
+      liked_by_2_users: "%{username}, %{username2}"
+      liked_by_multiple_users:
+        one: "%{username}, %{username2} %{count} más"
+        other: "%{username}, %{username2} és %{count} mások"
       liked_consolidated_description:
         one: "kedvelte %{count} bejegyzését"
         other: "kedvelte %{count} bejegyzését"
@@ -3106,6 +3108,7 @@ hu:
       full: "Létrehozás / Válaszolás / Megtekintés"
       create_post: "Válaszolás / Megtekintés"
       readonly: "Megtekintés"
+    preloader_text: "Betöltés"
     lightbox:
       download: "letöltés"
       counter: "%curr% / %total%"
@@ -3240,7 +3243,7 @@ hu:
         tracking:
           title: "Követés"
         regular:
-          title: "Átlagos"
+          title: "Normál"
           description: "Csak akkor leszel értesítve, ha valaki megemlíti a @nevedet vagy válaszol a bejegyzésedre."
         muted:
           title: "Némított"
@@ -3296,18 +3299,40 @@ hu:
     fullscreen_table:
       expand_btn: "Táblázat kibontása"
     sidebar:
-      unread_count: "%{count} olvasatlan"
-      new_count: "%{count} új"
+      unread_count:
+        one: "%{count} olvasatlan"
+        other: "%{count} olvasatlan"
+      new_count:
+        one: "%{count} új"
+        other: "%{count} új"
       sections:
+        messages:
+          header_link_text: "Üzenetek"
+          links:
+            inbox: "Beérkezett üzenetek"
+            sent: "Elküldött"
+            new: "Új"
+            new_with_count: "Új (%{count})"
+            unread: "Olvasatlan"
+            unread_with_count: "Olvasatlan (%{count})"
+            archive: "Archívum"
+        tags:
+          header_link_title: "összes címke"
+          header_link_text: "Címkék"
         categories:
           header_link_title: "összes kategória"
           header_link_text: "Kategóriák"
-        topics:
+        community:
           header_link_title: "kezdőlap"
-          header_link_text: "Téma"
+          header_link_text: "Közösség"
           links:
             tracked:
               content: "Követett"
+            groups:
+              content: "Csoportok"
+              title: "Összes csoport"
+            users:
+              content: "Felhasználók"
             my_posts:
               content: "Saját bejegyzéseim"
   admin_js:

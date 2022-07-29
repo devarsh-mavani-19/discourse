@@ -95,9 +95,10 @@ export default Mixin.create({
     const post = value.slice(end);
 
     if (opts && opts.lineVal) {
-      const lineVal = value.split("\n")[
-        value.slice(0, this._textarea.selectionStart).split("\n").length - 1
-      ];
+      const lineVal =
+        value.split("\n")[
+          value.slice(0, this._textarea.selectionStart).split("\n").length - 1
+        ];
       return { start, end, value: selVal, pre, post, lineVal };
     } else {
       return { start, end, value: selVal, pre, post };
@@ -532,10 +533,10 @@ export default Mixin.create({
     //                  *                    *
     const indentationRegexp = new RegExp(`^${indentationChar}+`);
     const lineStartsWithIndentationChar = lineVal.match(indentationRegexp);
-    const intentationCharsBeforeSelection = value.match(indentationRegexp);
+    const indentationCharsBeforeSelection = value.match(indentationRegexp);
     if (lineStartsWithIndentationChar) {
-      const charsToSubtract = intentationCharsBeforeSelection
-        ? intentationCharsBeforeSelection[0]
+      const charsToSubtract = indentationCharsBeforeSelection
+        ? indentationCharsBeforeSelection[0]
         : "";
       value =
         lineStartsWithIndentationChar[0].replace(charsToSubtract, "") + value;
@@ -570,14 +571,12 @@ export default Mixin.create({
         this.addText(selected, `:${code}:`);
       }
     } else {
-      let numOfRemovedChars = selected.pre.length - captures[1].length;
-      selected.pre = selected.pre.slice(
-        0,
-        selected.pre.length - captures[1].length
+      let numOfRemovedChars = captures[1].length;
+      this._insertAt(
+        selected.start - numOfRemovedChars,
+        selected.end,
+        `${code}:`
       );
-      selected.start -= numOfRemovedChars;
-      selected.end -= numOfRemovedChars;
-      this.addText(selected, `${code}:`);
     }
   },
 });

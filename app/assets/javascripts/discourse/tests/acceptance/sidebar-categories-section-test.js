@@ -1,19 +1,16 @@
 import I18n from "I18n";
-
-import { click, currentURL, settled, visit } from "@ember/test-helpers";
-
+import { test } from "qunit";
+import { click, currentURL, visit } from "@ember/test-helpers";
 import {
   acceptance,
-  conditionalTest,
+  count,
   exists,
   publishToMessageBus,
   query,
-  queryAll,
+  updateCurrentUser,
 } from "discourse/tests/helpers/qunit-helpers";
-import selectKit from "discourse/tests/helpers/select-kit-helper";
-import { isLegacyEmber } from "discourse-common/config/environment";
+
 import Site from "discourse/models/site";
-import { NotificationLevels } from "discourse/lib/notification-levels";
 import discoveryFixture from "discourse/tests/fixtures/discovery-fixtures";
 import categoryFixture from "discourse/tests/fixtures/category-fixtures";
 import { cloneJSON } from "discourse-common/lib/object";
@@ -23,49 +20,49 @@ acceptance(
   function (needs) {
     needs.settings({
       suppress_uncategorized_badge: true,
+      enable_experimental_sidebar_hamburger: true,
+      enable_sidebar: true,
     });
 
-    needs.user({ experimental_sidebar_enabled: true });
+    needs.user();
 
-    conditionalTest(
-      "uncategorized category is not shown",
-      !isLegacyEmber(),
-      async function (assert) {
-        const categories = Site.current().categories;
-        const category1 = categories[0];
+    test("uncategorized category is not shown", async function (assert) {
+      const categories = Site.current().categories;
+      const category1 = categories[0];
 
-        const uncategorizedCategory = categories.find((category) => {
-          return category.id === Site.current().uncategorized_category_id;
-        });
+      const uncategorizedCategory = categories.find((category) => {
+        return category.id === Site.current().uncategorized_category_id;
+      });
 
-        category1.set("notification_level", NotificationLevels.TRACKING);
+      updateCurrentUser({
+        sidebar_category_ids: [category1.id, uncategorizedCategory.id],
+      });
 
-        uncategorizedCategory.set(
-          "notification_level",
-          NotificationLevels.TRACKING
-        );
+      await visit("/");
 
-        await visit("/");
+      assert.strictEqual(
+        count(".sidebar-section-categories .sidebar-section-link"),
+        1,
+        "there should only be one section link under the section"
+      );
 
-        assert.strictEqual(
-          queryAll(".sidebar-section-categories .sidebar-section-link").length,
-          1,
-          "there should only be one section link under the section"
-        );
-
-        assert.ok(
-          exists(`.sidebar-section-link-${category1.slug}`),
-          `only the ${category1.slug} section link is shown`
-        );
-      }
-    );
+      assert.ok(
+        exists(`.sidebar-section-link-${category1.slug}`),
+        `only the ${category1.slug} section link is shown`
+      );
+    });
   }
 );
 
 acceptance("Sidebar - Categories Section", function (needs) {
-  needs.user({ experimental_sidebar_enabled: true });
+  needs.user({
+    sidebar_category_ids: [],
+    sidebar_tag_names: [],
+  });
 
   needs.settings({
+    enable_experimental_sidebar_hamburger: true,
+    enable_sidebar: true,
     suppress_uncategorized_badge: false,
   });
 
@@ -81,414 +78,331 @@ acceptance("Sidebar - Categories Section", function (needs) {
     server.get("/c/:categorySlug/:categoryId/find_by_slug.json", () => {
       return helper.response(cloneJSON(categoryFixture["/c/1/show.json"]));
     });
-
-    server.post("/category/:categoryId/notifications", () => {
-      return helper.response({});
-    });
   });
 
-  const setupTrackedCategories = function () {
+  const setupUserSidebarCategories = function () {
     const categories = Site.current().categories;
     const category1 = categories[0];
     const category2 = categories[1];
-    category1.set("notification_level", NotificationLevels.TRACKING);
-    category2.set("notification_level", NotificationLevels.TRACKING);
-
+    updateCurrentUser({ sidebar_category_ids: [category1.id, category2.id] });
     return { category1, category2 };
   };
 
-  conditionalTest(
-    "clicking on section header link",
-    !isLegacyEmber(),
-    async function (assert) {
-      await visit("/t/280");
-      await click(".sidebar-section-categories .sidebar-section-header-link");
+  test("clicking on section header link", async function (assert) {
+    await visit("/t/280");
+    await click(".sidebar-section-categories .sidebar-section-header-link");
 
-      assert.strictEqual(
-        currentURL(),
-        "/categories",
-        "it should transition to the categories page"
-      );
-    }
-  );
+    assert.strictEqual(
+      currentURL(),
+      "/categories",
+      "it should transition to the categories page"
+    );
+  });
 
-  conditionalTest(
-    "category section links when user does not have any tracked categories",
-    !isLegacyEmber(),
-    async function (assert) {
-      await visit("/");
+  test("clicking on section header button", async function (assert) {
+    await visit("/");
+    await click(".sidebar-section-categories .sidebar-section-header-button");
 
-      assert.strictEqual(
-        query(".sidebar-section-message").textContent.trim(),
-        I18n.t("sidebar.sections.categories.no_tracked_categories"),
-        "the no tracked categories message is displayed"
-      );
-    }
-  );
+    assert.strictEqual(
+      currentURL(),
+      "/u/eviltrout/preferences/sidebar",
+      "it should transition to user preferences sidebar page"
+    );
+  });
 
-  conditionalTest(
-    "uncategorized category is shown when tracked",
-    !isLegacyEmber(),
-    async function (assert) {
-      const categories = Site.current().categories;
+  test("category section links when user has not added any categories", async function (assert) {
+    await visit("/");
 
-      const uncategorizedCategory = categories.find((category) => {
-        return category.id === Site.current().uncategorized_category_id;
-      });
+    assert.ok(
+      exists(".sidebar-section-message"),
+      "the no categories message is displayed"
+    );
 
-      uncategorizedCategory.set(
-        "notification_level",
-        NotificationLevels.TRACKING
-      );
+    await click(".sidebar-section-message a");
 
-      await visit("/");
+    assert.strictEqual(
+      currentURL(),
+      "/u/eviltrout/preferences/sidebar",
+      "it should transition to user preferences sidebar page"
+    );
+  });
 
-      assert.ok(
-        exists(`.sidebar-section-link-${uncategorizedCategory.slug}`),
-        `displays the section link for ${uncategorizedCategory.slug} category`
-      );
-    }
-  );
+  test("uncategorized category is shown when added to sidebar", async function (assert) {
+    const categories = Site.current().categories;
 
-  conditionalTest(
-    "category section links for tracked categories",
-    !isLegacyEmber(),
-    async function (assert) {
-      const { category1, category2 } = setupTrackedCategories();
+    const uncategorizedCategory = categories.find((category) => {
+      return category.isUncategorizedCategory;
+    });
 
-      await visit("/");
+    updateCurrentUser({ sidebar_category_ids: [uncategorizedCategory.id] });
 
-      assert.strictEqual(
-        queryAll(".sidebar-section-categories .sidebar-section-link").length,
-        2,
-        "there should only be two section link under the section"
-      );
+    await visit("/");
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category1.slug} .badge-category`),
-        "category1 section link is rendered with category badge"
-      );
+    assert.ok(
+      exists(`.sidebar-section-link-${uncategorizedCategory.slug}`),
+      `displays the section link for ${uncategorizedCategory.slug} category`
+    );
+  });
 
-      assert.strictEqual(
-        query(`.sidebar-section-link-${category1.slug}`).textContent.trim(),
-        category1.name,
-        "displays category1's name for the link text"
-      );
+  test("category section links uses the bullet style even when category_style site setting has been configured", async function (assert) {
+    this.siteSettings.category_style = "box";
+    const { category1 } = setupUserSidebarCategories();
 
-      await click(`.sidebar-section-link-${category1.slug}`);
+    await visit("/");
 
-      assert.strictEqual(
-        currentURL(),
-        `/c/${category1.slug}/${category1.id}/l/latest`,
-        "it should transition to the category1's discovery page"
-      );
+    assert.ok(
+      exists(
+        `.sidebar-section-categories .sidebar-section-link-${category1.slug} .badge-wrapper.bullet`
+      ),
+      "category badge uses the bullet style"
+    );
+  });
 
-      assert.strictEqual(
-        queryAll(".sidebar-section-categories .sidebar-section-link.active")
-          .length,
-        1,
-        "only one link is marked as active"
-      );
+  test("category section links", async function (assert) {
+    const { category1, category2 } = setupUserSidebarCategories();
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category1.slug}.active`),
-        "the category1 section link is marked as active"
-      );
+    await visit("/");
 
-      await click(`.sidebar-section-link-${category2.slug}`);
+    assert.strictEqual(
+      count(".sidebar-section-categories .sidebar-section-link"),
+      2,
+      "there should only be two section link under the section"
+    );
 
-      assert.strictEqual(
-        currentURL(),
-        `/c/${category2.slug}/${category2.id}/l/latest`,
-        "it should transition to the category2's discovery page"
-      );
+    assert.ok(
+      exists(`.sidebar-section-link-${category1.slug} .badge-category`),
+      "category1 section link is rendered with category badge"
+    );
 
-      assert.strictEqual(
-        queryAll(".sidebar-section-categories .sidebar-section-link.active")
-          .length,
-        1,
-        "only one link is marked as active"
-      );
+    assert.strictEqual(
+      query(`.sidebar-section-link-${category1.slug}`).textContent.trim(),
+      category1.name,
+      "displays category1's name for the link text"
+    );
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category2.slug}.active`),
-        "the category2 section link is marked as active"
-      );
-    }
-  );
+    await click(`.sidebar-section-link-${category1.slug}`);
 
-  conditionalTest(
-    "visiting category discovery new route for tracked categories",
-    !isLegacyEmber(),
-    async function (assert) {
-      const { category1 } = setupTrackedCategories();
+    assert.strictEqual(
+      currentURL(),
+      `/c/${category1.slug}/${category1.id}/l/latest`,
+      "it should transition to the category1's discovery page"
+    );
 
-      await visit(`/c/${category1.slug}/${category1.id}/l/new`);
+    assert.strictEqual(
+      count(".sidebar-section-categories .sidebar-section-link.active"),
+      1,
+      "only one link is marked as active"
+    );
 
-      assert.strictEqual(
-        queryAll(".sidebar-section-categories .sidebar-section-link.active")
-          .length,
-        1,
-        "only one link is marked as active"
-      );
+    assert.ok(
+      exists(`.sidebar-section-link-${category1.slug}.active`),
+      "the category1 section link is marked as active"
+    );
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category1.slug}.active`),
-        "the category1 section link is marked as active for the new route"
-      );
-    }
-  );
+    await click(`.sidebar-section-link-${category2.slug}`);
 
-  conditionalTest(
-    "visiting category discovery unread route for tracked categories",
-    !isLegacyEmber(),
-    async function (assert) {
-      const { category1 } = setupTrackedCategories();
+    assert.strictEqual(
+      currentURL(),
+      `/c/${category2.slug}/${category2.id}/l/latest`,
+      "it should transition to the category2's discovery page"
+    );
 
-      await visit(`/c/${category1.slug}/${category1.id}/l/unread`);
+    assert.strictEqual(
+      count(".sidebar-section-categories .sidebar-section-link.active"),
+      1,
+      "only one link is marked as active"
+    );
 
-      assert.strictEqual(
-        queryAll(".sidebar-section-categories .sidebar-section-link.active")
-          .length,
-        1,
-        "only one link is marked as active"
-      );
+    assert.ok(
+      exists(`.sidebar-section-link-${category2.slug}.active`),
+      "the category2 section link is marked as active"
+    );
+  });
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category1.slug}.active`),
-        "the category1 section link is marked as active for the unread route"
-      );
-    }
-  );
+  test("visiting category discovery new route", async function (assert) {
+    const { category1 } = setupUserSidebarCategories();
 
-  conditionalTest(
-    "visiting category discovery top route for tracked categories",
-    !isLegacyEmber(),
-    async function (assert) {
-      const { category1 } = setupTrackedCategories();
+    await visit(`/c/${category1.slug}/${category1.id}/l/new`);
 
-      await visit(`/c/${category1.slug}/${category1.id}/l/top`);
+    assert.strictEqual(
+      count(".sidebar-section-categories .sidebar-section-link.active"),
+      1,
+      "only one link is marked as active"
+    );
 
-      assert.strictEqual(
-        queryAll(".sidebar-section-categories .sidebar-section-link.active")
-          .length,
-        1,
-        "only one link is marked as active"
-      );
+    assert.ok(
+      exists(`.sidebar-section-link-${category1.slug}.active`),
+      "the category1 section link is marked as active for the new route"
+    );
+  });
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category1.slug}.active`),
-        "the category1 section link is marked as active for the top route"
-      );
-    }
-  );
+  test("visiting category discovery unread route", async function (assert) {
+    const { category1 } = setupUserSidebarCategories();
 
-  conditionalTest(
-    "updating category notification level",
-    !isLegacyEmber(),
-    async function (assert) {
-      const { category1, category2 } = setupTrackedCategories();
+    await visit(`/c/${category1.slug}/${category1.id}/l/unread`);
 
-      await visit(`/c/${category1.slug}/${category1.id}/l/top`);
+    assert.strictEqual(
+      count(".sidebar-section-categories .sidebar-section-link.active"),
+      1,
+      "only one link is marked as active"
+    );
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category1.slug}`),
-        `has ${category1.name} section link in sidebar`
-      );
+    assert.ok(
+      exists(`.sidebar-section-link-${category1.slug}.active`),
+      "the category1 section link is marked as active for the unread route"
+    );
+  });
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category2.slug}`),
-        `has ${category2.name} section link in sidebar`
-      );
+  test("visiting category discovery top route", async function (assert) {
+    const { category1 } = setupUserSidebarCategories();
 
-      const notificationLevelsDropdown = selectKit(".notifications-button");
+    await visit(`/c/${category1.slug}/${category1.id}/l/top`);
 
-      await notificationLevelsDropdown.expand();
+    assert.strictEqual(
+      count(".sidebar-section-categories .sidebar-section-link.active"),
+      1,
+      "only one link is marked as active"
+    );
 
-      await notificationLevelsDropdown.selectRowByValue(
-        NotificationLevels.REGULAR
-      );
+    assert.ok(
+      exists(`.sidebar-section-link-${category1.slug}.active`),
+      "the category1 section link is marked as active for the top route"
+    );
+  });
 
-      assert.ok(
-        !exists(`.sidebar-section-link-${category1.slug}`),
-        `does not have ${category1.name} section link in sidebar`
-      );
+  test("new and unread count for categories link", async function (assert) {
+    const { category1, category2 } = setupUserSidebarCategories();
 
-      assert.ok(
-        exists(`.sidebar-section-link-${category2.slug}`),
-        `has ${category2.name} section link in sidebar`
-      );
-
-      await notificationLevelsDropdown.expand();
-
-      await notificationLevelsDropdown.selectRowByValue(
-        NotificationLevels.TRACKING
-      );
-
-      assert.ok(
-        exists(`.sidebar-section-link-${category1.slug}`),
-        `has ${category1.name} section link in sidebar`
-      );
-
-      assert.ok(
-        exists(`.sidebar-section-link-${category2.slug}`),
-        `has ${category2.name} section link in sidebar`
-      );
-    }
-  );
-
-  conditionalTest(
-    "new and unread count for categories link",
-    !isLegacyEmber(),
-    async function (assert) {
-      const { category1, category2 } = setupTrackedCategories();
-
-      this.container.lookup("topic-tracking-state:main").loadStates([
-        {
-          topic_id: 1,
-          highest_post_number: 1,
-          last_read_post_number: null,
-          created_at: "2022-05-11T03:09:31.959Z",
-          category_id: category1.id,
-          notification_level: null,
-          created_in_new_period: true,
-          unread_not_too_old: true,
-          treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
-        },
-        {
-          topic_id: 2,
-          highest_post_number: 12,
-          last_read_post_number: 11,
-          created_at: "2020-02-09T09:40:02.672Z",
-          category_id: category1.id,
-          notification_level: 2,
-          created_in_new_period: false,
-          unread_not_too_old: true,
-          treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
-        },
-        {
-          topic_id: 3,
-          highest_post_number: 15,
-          last_read_post_number: 14,
-          created_at: "2021-06-14T12:41:02.477Z",
-          category_id: category2.id,
-          notification_level: 2,
-          created_in_new_period: false,
-          unread_not_too_old: true,
-          treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
-        },
-        {
-          topic_id: 4,
-          highest_post_number: 17,
-          last_read_post_number: 16,
-          created_at: "2020-10-31T03:41:42.257Z",
-          category_id: category2.id,
-          notification_level: 2,
-          created_in_new_period: false,
-          unread_not_too_old: true,
-          treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
-        },
-      ]);
-
-      await visit("/");
-
-      assert.strictEqual(
-        query(
-          `.sidebar-section-link-${category1.slug} .sidebar-section-link-content-badge`
-        ).textContent.trim(),
-        I18n.t("sidebar.unread_count", { count: 1 }),
-        `displays 1 unread count for ${category1.slug} section link`
-      );
-
-      assert.strictEqual(
-        query(
-          `.sidebar-section-link-${category2.slug} .sidebar-section-link-content-badge`
-        ).textContent.trim(),
-        I18n.t("sidebar.unread_count", { count: 2 }),
-        `displays 2 unread count for ${category2.slug} section link`
-      );
-
-      publishToMessageBus("/unread", {
-        topic_id: 2,
-        message_type: "read",
-        payload: {
-          last_read_post_number: 12,
-          highest_post_number: 12,
-        },
-      });
-
-      await settled();
-
-      assert.strictEqual(
-        query(
-          `.sidebar-section-link-${category1.slug} .sidebar-section-link-content-badge`
-        ).textContent.trim(),
-        I18n.t("sidebar.new_count", { count: 1 }),
-        `displays 1 new count for ${category1.slug} section link`
-      );
-
-      publishToMessageBus("/unread", {
+    this.container.lookup("topic-tracking-state:main").loadStates([
+      {
         topic_id: 1,
-        message_type: "read",
-        payload: {
-          last_read_post_number: 1,
-          highest_post_number: 1,
-        },
-      });
-
-      await settled();
-
-      assert.ok(
-        !exists(
-          `.sidebar-section-link-${category1.slug} .sidebar-section-link-content-badge`
-        ),
-        `does not display any badge ${category1.slug} section link`
-      );
-
-      publishToMessageBus("/unread", {
+        highest_post_number: 1,
+        last_read_post_number: null,
+        created_at: "2022-05-11T03:09:31.959Z",
+        category_id: category1.id,
+        notification_level: null,
+        created_in_new_period: true,
+        treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
+      },
+      {
+        topic_id: 2,
+        highest_post_number: 12,
+        last_read_post_number: 11,
+        created_at: "2020-02-09T09:40:02.672Z",
+        category_id: category1.id,
+        notification_level: 2,
+        created_in_new_period: false,
+        treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
+      },
+      {
         topic_id: 3,
-        message_type: "read",
-        payload: {
-          last_read_post_number: 15,
-          highest_post_number: 15,
-        },
-      });
+        highest_post_number: 15,
+        last_read_post_number: 14,
+        created_at: "2021-06-14T12:41:02.477Z",
+        category_id: category2.id,
+        notification_level: 2,
+        created_in_new_period: false,
+        treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
+      },
+      {
+        topic_id: 4,
+        highest_post_number: 17,
+        last_read_post_number: 16,
+        created_at: "2020-10-31T03:41:42.257Z",
+        category_id: category2.id,
+        notification_level: 2,
+        created_in_new_period: false,
+        treat_as_new_topic_start_date: "2022-05-09T03:17:34.286Z",
+      },
+    ]);
 
-      await settled();
+    await visit("/");
 
-      assert.strictEqual(
-        query(
-          `.sidebar-section-link-${category2.slug} .sidebar-section-link-content-badge`
-        ).textContent.trim(),
-        I18n.t("sidebar.unread_count", { count: 1 }),
-        `displays 1 unread count for ${category2.slug} section link`
-      );
-    }
-  );
+    assert.strictEqual(
+      query(
+        `.sidebar-section-link-${category1.slug} .sidebar-section-link-content-badge`
+      ).textContent.trim(),
+      I18n.t("sidebar.unread_count", { count: 1 }),
+      `displays 1 unread count for ${category1.slug} section link`
+    );
 
-  conditionalTest(
-    "clean up topic tracking state state changed callbacks when section is destroyed",
-    !isLegacyEmber(),
-    async function (assert) {
-      setupTrackedCategories();
+    assert.strictEqual(
+      query(
+        `.sidebar-section-link-${category2.slug} .sidebar-section-link-content-badge`
+      ).textContent.trim(),
+      I18n.t("sidebar.unread_count", { count: 2 }),
+      `displays 2 unread count for ${category2.slug} section link`
+    );
 
-      await visit("/");
+    await publishToMessageBus("/unread", {
+      topic_id: 2,
+      message_type: "read",
+      payload: {
+        last_read_post_number: 12,
+        highest_post_number: 12,
+      },
+    });
 
-      const topicTrackingState = this.container.lookup(
-        "topic-tracking-state:main"
-      );
+    assert.strictEqual(
+      query(
+        `.sidebar-section-link-${category1.slug} .sidebar-section-link-content-badge`
+      ).textContent.trim(),
+      I18n.t("sidebar.new_count", { count: 1 }),
+      `displays 1 new count for ${category1.slug} section link`
+    );
 
-      const initialCallbackCount = Object.keys(
-        topicTrackingState.stateChangeCallbacks
-      ).length;
+    await publishToMessageBus("/unread", {
+      topic_id: 1,
+      message_type: "read",
+      payload: {
+        last_read_post_number: 1,
+        highest_post_number: 1,
+      },
+    });
 
-      await click(".header-sidebar-toggle .btn");
-      await click(".header-sidebar-toggle .btn");
+    assert.ok(
+      !exists(
+        `.sidebar-section-link-${category1.slug} .sidebar-section-link-content-badge`
+      ),
+      `does not display any badge ${category1.slug} section link`
+    );
 
-      assert.strictEqual(
-        Object.keys(topicTrackingState.stateChangeCallbacks).length,
+    await publishToMessageBus("/unread", {
+      topic_id: 3,
+      message_type: "read",
+      payload: {
+        last_read_post_number: 15,
+        highest_post_number: 15,
+      },
+    });
+
+    assert.strictEqual(
+      query(
+        `.sidebar-section-link-${category2.slug} .sidebar-section-link-content-badge`
+      ).textContent.trim(),
+      I18n.t("sidebar.unread_count", { count: 1 }),
+      `displays 1 unread count for ${category2.slug} section link`
+    );
+  });
+
+  test("clean up topic tracking state state changed callbacks when Sidebar is collapsed", async function (assert) {
+    setupUserSidebarCategories();
+
+    await visit("/");
+
+    const topicTrackingState = this.container.lookup(
+      "topic-tracking-state:main"
+    );
+
+    const initialCallbackCount = Object.keys(
+      topicTrackingState.stateChangeCallbacks
+    ).length;
+
+    await click(".hamburger-dropdown");
+
+    assert.ok(
+      Object.keys(topicTrackingState.stateChangeCallbacks).length <
         initialCallbackCount
-      );
-    }
-  );
+    );
+  });
 });

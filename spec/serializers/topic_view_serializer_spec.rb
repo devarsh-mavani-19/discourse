@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe TopicViewSerializer do
+RSpec.describe TopicViewSerializer do
   def serialize_topic(topic, user_arg)
     topic_view = TopicView.new(topic.id, user_arg)
     serializer = TopicViewSerializer.new(topic_view, scope: Guardian.new(user_arg), root: false).as_json
@@ -70,7 +70,7 @@ describe TopicViewSerializer do
       it 'should have thumbnail jobs enqueued' do
         SiteSetting.create_thumbnails = true
 
-        Discourse.redis.del(topic.thumbnail_job_redis_key(Topic.thumbnail_sizes))
+        Discourse.redis.del(topic.thumbnail_job_redis_key([]))
         json = nil
 
         expect do
@@ -81,7 +81,7 @@ describe TopicViewSerializer do
 
         expect do
           json = serialize_topic(topic, user)
-        end.to change { Jobs::GenerateTopicThumbnails.jobs.size }.by(0)
+        end.not_to change { Jobs::GenerateTopicThumbnails.jobs.size }
       end
     end
 

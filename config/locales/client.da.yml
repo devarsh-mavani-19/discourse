@@ -578,6 +578,7 @@ da:
       forever: "Forevigt"
       relative: "Relativ tid"
       none: "Ikke nødvendig"
+      never: "Aldrig"
       last_custom: "Sidste brugerdefineret dato"
       custom: "Brugerdefineret dato og tid"
       select_timeframe: "Vælg en tidsramme"
@@ -1049,6 +1050,8 @@ da:
       external_links_in_new_tab: "Åbn alle eksterne links i en ny fane"
       enable_quoting: "Tillad citering af markeret tekst"
       enable_defer: "Aktivér 'udsæt' for at markere emner som ulæste"
+      experimental_sidebar:
+        options: "Indstillinger"
       change: "skift"
       featured_topic: "Fremhævet emne"
       moderator: "%{user} er en moderator"
@@ -1090,7 +1093,7 @@ da:
       muted_categories: "Stille!"
       muted_categories_instructions: "Du vil ikke blive underrettet om noget vedr. nye emner i disse kategorier, og de vises ikke på siderne \"kategori\" eller \"seneste\"."
       muted_categories_instructions_dont_hide: "Du vil ikke blive underrettet om noget vedr. nye emner i disse kategorier."
-      regular_categories: "Almindelig"
+      regular_categories: "Normal"
       regular_categories_instructions: "Du vil se disse kategorier i “seneste” og “Top” emnelister."
       no_category_access: "Som moderator har du begrænset kategori-adgang, at gemme er slået fra. "
       delete_account: "Slet min konto"
@@ -1646,10 +1649,8 @@ da:
       other: svar
     signup_cta:
       sign_up: "Tilmeld dig"
-      hide_session: "Mind mig om det i morgen"
       hide_forever: "nej tak"
       intro: "Hej! Det ser ud til, at du nyder diskussionen, men du har ikke tilmeldt dig en konto endnu."
-      value_prop: "Når du opretter en konto, husker vi præcis, hvad du har læst, så du altid kommer tilbage, hvor du slap. Du får også meddelelser, her og via e-mail, når nogen svarer til dig. Og du kan 'Synes godt om' indlæg for at dele kærligheden. :heartpulse:"
     summary:
       enabled_description: "Du ser et sammendrag af dette emne: kun de mest interessante indlæg som andre finder interresante."
       description:
@@ -1846,9 +1847,6 @@ da:
       min_content_not_reached:
         one: "Vælg mindst %{count} punkt."
         other: "Vælg mindst %{count} punkter."
-      invalid_selection_length:
-        one: "Der skal mindst vælges %{count} karakter."
-        other: "Der skal mindst vælges %{count} karakterer."
       components:
         tag_drop:
           filter_for_more: Filtrer for mere...
@@ -1934,7 +1932,6 @@ da:
       create_whisper: "Hvisk"
       create_shared_draft: "Opret delt kladde"
       edit_shared_draft: "Rediger delt kladde"
-      users_placeholder: "Tilføj en bruger"
       title_placeholder: "Hvad handler diskussionen om i korte træk?"
       title_or_link_placeholder: "Skriv titel eller indsæt et link her"
       edit_reason_placeholder: "hvorfor redigerer du?"
@@ -2033,6 +2030,7 @@ da:
       empty: "Ingen notifikationer fundet."
       post_approved: "Dit indlæg blev godkendt"
       reviewable_items: "elementer, der kræver gennemgang"
+      watching_first_post_label: "Nyt Emne"
       mentioned: "<span>%{username}</span> %{description}"
       group_mentioned: "<span>%{username}</span> %{description}"
       quoted: "<span>%{username}</span> %{description}"
@@ -2045,6 +2043,10 @@ da:
       liked_many:
         one: "<span class='multi-user'>%{username}, %{username2} og %{count} anden</span> %{description}"
         other: "<span class='multi-user'>%{username}, %{username2} og %{count} andre</span> %{description}"
+      liked_by_2_users: "%{username}, %{username2}"
+      liked_by_multiple_users:
+        one: "%{username}, %{username2} og %{count} anden"
+        other: "%{username}, %{username2} og %{count} andre"
       liked_consolidated_description:
         one: "syntes godt om %{count} af dine indlæg"
         other: "syntes godt om %{count} af dine indlæg"
@@ -3242,11 +3244,11 @@ da:
         this_week: "Uge"
         today: "I dag"
         other_periods: "se top:"
-    browser_update: 'Desværre, <a href="https://www.discourse.org/faq/#browser">din browser er for gammel til at virke korrekt på dette websted</a>. <a href="https://browsehappy.com">Opgradere venligst din browser</a> for at se vore gode indhold, log ind og svar.'
     permission_types:
       full: "Opret / Besvar / Se"
       create_post: "Besvar / Se"
       readonly: "Se"
+    preloader_text: "Indlæser"
     lightbox:
       download: "hent"
       previous: "Forrige (Venstre piletast)"
@@ -3329,7 +3331,6 @@ da:
         edit: "%{shortcut} Redigér indlæg"
         delete: "%{shortcut} Slet indlæg"
         mark_muted: "%{shortcut} Gøre emne Stille!"
-        mark_regular: "%{shortcut} Almindeligt (standard) emne"
         mark_tracking: "%{shortcut} Følg emne"
         mark_watching: "%{shortcut} Hold øje med emne"
         print: "%{shortcut} Print emne"
@@ -3456,7 +3457,7 @@ da:
           title: "Følger"
           description: "Du sporer automatisk alle emner med dette mærke. Et antal for ulæste og nye indlæg vises ved siden af emnet."
         regular:
-          title: "Almindeligt"
+          title: "Normal"
           description: "Du får besked, hvis nogen nævner dit @navn eller svarer på dit indlæg."
         muted:
           title: "Lydløs"
@@ -3553,18 +3554,40 @@ da:
     fullscreen_table:
       expand_btn: "Udvid Tabel"
     sidebar:
-      unread_count: "%{count} ulæst"
-      new_count: "%{count} ny"
+      unread_count:
+        one: "%{count} ulæst"
+        other: "%{count} ulæste"
+      new_count:
+        one: "%{count} ny"
+        other: "%{count} nye"
       sections:
+        messages:
+          header_link_text: "Beskeder"
+          links:
+            inbox: "Indbakke"
+            sent: "Sendt"
+            new: "Nye"
+            new_with_count: "Nye (%{count})"
+            unread: "Ulæste"
+            unread_with_count: "Ulæst (%{count})"
+            archive: "Arkiv"
+        tags:
+          header_link_title: "alle mærker"
+          header_link_text: "Tags"
         categories:
           header_link_title: "alle kategorier"
           header_link_text: "Kategorier"
-        topics:
+        community:
           header_link_title: "hjem"
-          header_link_text: "Emner"
+          header_link_text: "Fællesskab"
           links:
             tracked:
               content: "Sporet"
+            groups:
+              content: "Grupper"
+              title: "Alle grupper"
+            users:
+              content: "Brugere"
             my_posts:
               content: "Mine indlæg"
   admin_js:

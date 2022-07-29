@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe TagsController do
+RSpec.describe TagsController do
   fab!(:user) { Fabricate(:user) }
   fab!(:admin) { Fabricate(:admin) }
   fab!(:regular_user) { Fabricate(:trust_level_4) }
@@ -965,7 +965,7 @@ describe TagsController do
     end
   end
 
-  context '#upload_csv' do
+  describe '#upload_csv' do
     it 'requires you to be logged in' do
       post "/tags/upload.json"
       expect(response.status).to eq(403)
@@ -1093,6 +1093,61 @@ describe TagsController do
         expect(response.status).to eq(404)
         expect_same_tag_names(tag.reload.synonyms, [synonym])
       end
+    end
+  end
+
+  describe '#update_notifications' do
+    fab!(:tag) { Fabricate(:tag) }
+
+    before do
+      sign_in(user)
+    end
+
+    it 'returns 404 when tag is not found' do
+      put "/tag/someinvalidtagname/notifications.json"
+
+      expect(response.status).to eq(404)
+    end
+
+    it 'updates the notification level of a tag for a user' do
+      tag_user = TagUser.change(user.id, tag.id, NotificationLevels.all[:muted])
+
+      put "/tag/#{tag.name}/notifications.json", params: {
+        tag_notification: {
+          notification_level: NotificationLevels.all[:tracking]
+        }
+      }
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["watched_tags"]).to eq([])
+      expect(response.parsed_body["watching_first_post_tags"]).to eq([])
+      expect(response.parsed_body["tracked_tags"]).to eq([tag.name])
+      expect(response.parsed_body["muted_tags"]).to eq([])
+      expect(response.parsed_body["regular_tags"]).to eq([])
+
+      expect(tag_user.reload.notification_level).to eq(NotificationLevels.all[:tracking])
+    end
+
+    it 'sets the notification level of a tag for a user' do
+      expect do
+        put "/tag/#{tag.name}/notifications.json", params: {
+          tag_notification: {
+            notification_level: NotificationLevels.all[:muted]
+          }
+        }
+
+        expect(response.status).to eq(200)
+
+        expect(response.parsed_body["watched_tags"]).to eq([])
+        expect(response.parsed_body["watching_first_post_tags"]).to eq([])
+        expect(response.parsed_body["tracked_tags"]).to eq([])
+        expect(response.parsed_body["muted_tags"]).to eq([tag.name])
+        expect(response.parsed_body["regular_tags"]).to eq([])
+      end.to change { user.tag_users.count }.by(1)
+
+      tag_user = user.tag_users.last
+
+      expect(tag_user.notification_level).to eq(NotificationLevels.all[:muted])
     end
   end
 end

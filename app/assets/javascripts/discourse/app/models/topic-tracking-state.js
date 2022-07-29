@@ -23,8 +23,7 @@ function isUnread(topic) {
   return (
     topic.last_read_post_number !== null &&
     topic.last_read_post_number < topic.highest_post_number &&
-    topic.notification_level >= NotificationLevels.TRACKING &&
-    topic.unread_not_too_old
+    topic.notification_level >= NotificationLevels.TRACKING
   );
 }
 
@@ -32,15 +31,15 @@ function isUnseen(topic) {
   return !topic.is_seen;
 }
 
-function hasMutedTags(topicTagIds, mutedTagIds, siteSettings) {
-  if (!mutedTagIds || !topicTagIds) {
+function hasMutedTags(topicTags, mutedTags, siteSettings) {
+  if (!mutedTags || !topicTags) {
     return false;
   }
   return (
     (siteSettings.remove_muted_tags_from_latest === "always" &&
-      topicTagIds.any((tagId) => mutedTagIds.includes(tagId))) ||
+      topicTags.any((topicTag) => mutedTags.includes(topicTag))) ||
     (siteSettings.remove_muted_tags_from_latest === "only_muted" &&
-      topicTagIds.every((tagId) => mutedTagIds.includes(tagId)))
+      topicTags.every((topicTag) => mutedTags.includes(topicTag)))
   );
 }
 
@@ -246,8 +245,10 @@ const TopicTrackingState = EmberObject.extend({
       filter === "categories" &&
       data.message_type === "latest" &&
       !Site.current().mobileView &&
-      this.siteSettings.desktop_category_page_style ===
-        "categories_and_latest_topics"
+      (this.siteSettings.desktop_category_page_style ===
+        "categories_and_latest_topics" ||
+        this.siteSettings.desktop_category_page_style ===
+          "categories_and_latest_topics_created_date")
     ) {
       this._addIncoming(data.topic_id);
     }
@@ -501,15 +502,11 @@ const TopicTrackingState = EmberObject.extend({
         return false;
       }
 
-      if (tagId && !(topic.tags && topic.tags.indexOf(tagId) > -1)) {
+      if (tagId && !topic.tags?.includes(tagId)) {
         return false;
       }
 
-      if (
-        type === "new" &&
-        mutedCategoryIds &&
-        mutedCategoryIds.indexOf(topic.category_id) !== -1
-      ) {
+      if (type === "new" && mutedCategoryIds?.includes(topic.category_id)) {
         return false;
       }
 
@@ -589,7 +586,7 @@ const TopicTrackingState = EmberObject.extend({
       (topic, newTopic, unreadTopic) => {
         if (topic.tags && topic.tags.length > 0) {
           tags.forEach((tag) => {
-            if (topic.tags.indexOf(tag) > -1) {
+            if (topic.tags.includes(tag)) {
               if (unreadTopic) {
                 counts[tag].unreadCount++;
               }
@@ -616,7 +613,7 @@ const TopicTrackingState = EmberObject.extend({
       if (
         topic.category_id === category_id &&
         !topic.deleted &&
-        (!tagId || (topic.tags && topic.tags.indexOf(tagId) > -1))
+        (!tagId || topic.tags?.includes(tagId))
       ) {
         sum +=
           topic.last_read_post_number === null ||
@@ -876,10 +873,9 @@ const TopicTrackingState = EmberObject.extend({
     }
 
     if (["new_topic", "latest"].includes(data.message_type)) {
-      const mutedTagIds = User.currentProp("muted_tag_ids");
-      if (
-        hasMutedTags(data.payload.topic_tag_ids, mutedTagIds, this.siteSettings)
-      ) {
+      const mutedTags = User.currentProp("muted_tags");
+
+      if (hasMutedTags(data.payload.tags, mutedTags, this.siteSettings)) {
         return;
       }
     }
@@ -942,7 +938,7 @@ const TopicTrackingState = EmberObject.extend({
   },
 
   _addIncoming(topicId) {
-    if (this.newIncoming.indexOf(topicId) === -1) {
+    if (!this.newIncoming.includes(topicId)) {
       this.newIncoming.push(topicId);
     }
   },
@@ -962,7 +958,7 @@ const TopicTrackingState = EmberObject.extend({
   _stateKey(topicOrId) {
     if (typeof topicOrId === "number") {
       return `t${topicOrId}`;
-    } else if (typeof topicOrId === "string" && topicOrId.indexOf("t") > -1) {
+    } else if (typeof topicOrId === "string" && topicOrId.includes("t")) {
       return topicOrId;
     } else {
       return `t${topicOrId.topic_id}`;

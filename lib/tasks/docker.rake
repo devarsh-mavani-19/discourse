@@ -44,7 +44,7 @@ end
 def run_or_fail_prettier(*patterns)
   if patterns.any? { |p| Dir[p].any? }
     patterns = patterns.map { |p| "'#{p}'" }.join(' ')
-    run_or_fail("yarn prettier --list-different #{patterns}")
+    run_or_fail("yarn pprettier --list-different #{patterns}")
   else
     puts "Skipping prettier. Pattern not found."
     true
@@ -84,12 +84,12 @@ task 'docker:test' do
 
         unless ENV["SKIP_CORE"]
           puts "Listing prettier offenses in core:"
-          @good &&= run_or_fail('yarn prettier --list-different "app/assets/stylesheets/**/*.scss" "app/assets/javascripts/**/*.js"')
+          @good &&= run_or_fail('yarn pprettier --list-different "app/assets/stylesheets/**/*.scss" "app/assets/javascripts/**/*.js"')
         end
 
         unless ENV["SKIP_PLUGINS"]
           puts "Listing prettier offenses in plugins:"
-          @good &&= run_or_fail('yarn prettier --list-different "plugins/**/assets/stylesheets/**/*.scss" "plugins/**/assets/javascripts/**/*.{js,es6}"')
+          @good &&= run_or_fail('yarn pprettier --list-different "plugins/**/assets/stylesheets/**/*.scss" "plugins/**/assets/javascripts/**/*.{js,es6}"')
         end
       end
     end
@@ -210,17 +210,13 @@ task 'docker:test' do
 
         unless ENV["SKIP_CORE"]
           @good &&= run_or_fail("cd app/assets/javascripts/discourse && CI=1 yarn ember exam --random")
-
-          if !ENV["SKIP_WIZARD_TESTS"]
-            @good &&= run_or_fail("QUNIT_EMBER_CLI=0 bundle exec rake qunit:test['#{js_timeout}','/wizard/qunit']")
-          end
         end
 
         unless ENV["SKIP_PLUGINS"]
           if ENV["SINGLE_PLUGIN"]
-            @good &&= run_or_fail("CI=1 QUNIT_EMBER_CLI=1 bundle exec rake plugin:qunit['#{ENV['SINGLE_PLUGIN']}','#{js_timeout}']")
+            @good &&= run_or_fail("CI=1 bundle exec rake plugin:qunit['#{ENV['SINGLE_PLUGIN']}','#{js_timeout}']")
           else
-            @good &&= run_or_fail("CI=1 QUNIT_EMBER_CLI=1 bundle exec rake plugin:qunit['*','#{js_timeout}']")
+            @good &&= run_or_fail("CI=1 bundle exec rake plugin:qunit['*','#{js_timeout}']")
           end
         end
       end

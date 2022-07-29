@@ -120,6 +120,25 @@ export default Controller.extend({
     this.set("showPreview", val === "true");
   },
 
+  @computed(
+    "model.loading",
+    "isUploading",
+    "isProcessingUpload",
+    "_disableSubmit"
+  )
+  get disableSubmit() {
+    return (
+      this.model?.loading ||
+      this.isUploading ||
+      this.isProcessingUpload ||
+      this._disableSubmit
+    );
+  },
+
+  set disableSubmit(value) {
+    return this.set("_disableSubmit", value);
+  },
+
   @discourseComputed("showPreview")
   toggleText(showPreview) {
     return showPreview
@@ -166,7 +185,7 @@ export default Controller.extend({
 
   showToolbar: computed({
     get() {
-      const keyValueStore = getOwner(this).lookup("key-value-store:main");
+      const keyValueStore = getOwner(this).lookup("service:key-value-store");
       const storedVal = keyValueStore.get("toolbar-enabled");
       if (this._toolbarEnabled === undefined && storedVal === undefined) {
         // iPhone 6 is 375, anything narrower and toolbar should
@@ -178,7 +197,7 @@ export default Controller.extend({
       return this._toolbarEnabled || storedVal === "true";
     },
     set(key, val) {
-      const keyValueStore = getOwner(this).lookup("key-value-store:main");
+      const keyValueStore = getOwner(this).lookup("service:key-value-store");
       this._toolbarEnabled = val;
       keyValueStore.set({
         key: "toolbar-enabled",
@@ -214,6 +233,7 @@ export default Controller.extend({
   },
 
   isStaffUser: reads("currentUser.staff"),
+  whisperer: reads("currentUser.whisperer"),
 
   canUnlistTopic: and("model.creatingTopic", "isStaffUser"),
 
@@ -270,12 +290,12 @@ export default Controller.extend({
     return SAVE_LABELS[modelAction];
   },
 
-  @discourseComputed("isStaffUser", "model.action")
-  canWhisper(isStaffUser, modelAction) {
+  @discourseComputed("whisperer", "model.action")
+  canWhisper(whisperer, modelAction) {
     return (
       this.siteSettings.enable_whispers &&
-      isStaffUser &&
-      Composer.REPLY === modelAction
+      Composer.REPLY === modelAction &&
+      whisperer
     );
   },
 
@@ -802,8 +822,6 @@ export default Controller.extend({
       );
     },
   },
-
-  disableSubmit: or("model.loading", "isUploading", "isProcessingUpload"),
 
   save(force, options = {}) {
     if (this.disableSubmit) {

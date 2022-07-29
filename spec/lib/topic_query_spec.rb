@@ -2,7 +2,7 @@
 
 require 'topic_view'
 
-describe TopicQuery do
+RSpec.describe TopicQuery do
 
   # TODO:
   #   This fab! here has impact on all tests.
@@ -65,7 +65,7 @@ describe TopicQuery do
     end
   end
 
-  context "#list_topics_by" do
+  describe "#list_topics_by" do
 
     it "allows users to view their own invisible topics" do
       _topic = Fabricate(:topic, user: user)
@@ -77,7 +77,7 @@ describe TopicQuery do
 
   end
 
-  context "#prioritize_pinned_topics" do
+  describe "#prioritize_pinned_topics" do
     it "does the pagination correctly" do
       num_topics = 15
       per_page = 3
@@ -503,7 +503,7 @@ describe TopicQuery do
     end
   end
 
-  context "#list_top_for" do
+  describe "#list_top_for" do
     it "lists top for the week" do
       Fabricate(:topic, like_count: 1000, posts_count: 100)
       TopTopic.refresh!
@@ -549,7 +549,7 @@ describe TopicQuery do
     end
 
     it 'should include default regular category topics in latest list for anonymous users' do
-      SiteSetting.default_categories_regular = category.id.to_s
+      SiteSetting.default_categories_normal = category.id.to_s
       expect(TopicQuery.new.list_latest.topics.map(&:id)).to include(topic.id)
     end
 
@@ -834,6 +834,9 @@ describe TopicQuery do
     end
 
     context 'with whispers' do
+      before do
+        SiteSetting.enable_whispers = true
+      end
 
       it 'correctly shows up in unread for staff' do
 
@@ -889,7 +892,7 @@ describe TopicQuery do
 
   end
 
-  context '#list_new' do
+  describe '#list_new' do
 
     context 'without a new topic' do
       it "has no new topics" do
@@ -966,7 +969,7 @@ describe TopicQuery do
 
   end
 
-  context '#list_posted' do
+  describe '#list_posted' do
     let(:topics) { topic_query.list_posted.topics }
 
     it "returns blank when there are no posted topics" do
@@ -1020,7 +1023,7 @@ describe TopicQuery do
     end
   end
 
-  context '#list_unseen' do
+  describe '#list_unseen' do
     it "returns an empty list when there aren't topics" do
       expect(topic_query.list_unseen.topics).to be_blank
     end
@@ -1071,7 +1074,7 @@ describe TopicQuery do
     end
   end
 
-  context '#list_related_for' do
+  describe '#list_related_for' do
 
     let(:user) do
       Fabricate(:admin)

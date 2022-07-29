@@ -102,7 +102,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ember_cli_required?
-    Rails.env.development? && ENV['NO_EMBER_CLI'] != '1' && request.headers['X-Discourse-Ember-CLI'] != 'true'
+    Rails.env.development? && ENV["ALLOW_EMBER_CLI_PROXY_BYPASS"] != "1" && request.headers['X-Discourse-Ember-CLI'] != 'true'
   end
 
   def application_layout
@@ -339,7 +339,7 @@ class ApplicationController < ActionController::Base
         return render plain: message, status: status_code
       end
       with_resolved_locale do
-        error_page_opts[:layout] = opts[:include_ember] ? 'application' : 'no_ember'
+        error_page_opts[:layout] = (opts[:include_ember] && @preloaded) ? 'application' : 'no_ember'
         render html: build_not_found_page(error_page_opts)
       end
     end
@@ -676,6 +676,7 @@ class ApplicationController < ActionController::Base
 
   def banner_json
     json = ApplicationController.banner_json_cache["json"]
+    return "{}" if !current_user && SiteSetting.login_required?
 
     unless json
       topic = Topic.where(archetype: Archetype.banner).first

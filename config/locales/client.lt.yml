@@ -585,6 +585,7 @@ lt:
       forever: "Am-inai"
       relative: "Santykinis laikas"
       none: "Nė vienas reikalingas"
+      never: "Niekada"
       last_custom: "Paskutinė tinkinta data ir laikas"
       custom: "Pasirinkite datą ir laiką"
       select_timeframe: "Pasirinkite laikotarpį"
@@ -1050,6 +1051,8 @@ lt:
       external_links_in_new_tab: "Atidaryti visas pridėtas nuorodas naujame lange"
       enable_quoting: "Įjungti citatų atsakymus pabrėžtam tekstui"
       enable_defer: "Įgalinti atidėjimą, kad pažymėtumėte temas kaip neskaitytas"
+      experimental_sidebar:
+        options: "Nustatymai"
       change: "pakeisti"
       featured_topic: "Įpatinga tema"
       moderator: "%{user} yra moderatorius"
@@ -1090,7 +1093,7 @@ lt:
       muted_categories: "Nutildytos"
       muted_categories_instructions: "Jums nebus pranešta nieko apie naujas šių kategorijų temas ir jos nebus rodomos kategorijose ar naujausiuose puslapiuose."
       muted_categories_instructions_dont_hide: "Jums nieko nebus pranešta apie naujas temas šiose kategorijose."
-      regular_categories: "Nuolatinės"
+      regular_categories: "Įprastas"
       regular_categories_instructions: "Šias kategorijas matysite temų sąrašuose „Naujausios“ ir „Populiariausios“."
       no_category_access: "Kaip moderatorius turite ribotą prieigą prie kategorijos, išsaugojimas išjungtas."
       delete_account: "Ištrinti mano vartotoją"
@@ -1612,11 +1615,9 @@ lt:
       other: Atsakymai
     signup_cta:
       sign_up: "Registruotis"
-      hide_session: "Priminti rytoj"
       hide_forever: "Ačiū ne!"
       hidden_for_session: "Gerai, paklausime rytoj. Jūs taip pat visada galite naudoti „Prisijungti“, kad sukurtumėte paskyrą."
       intro: "Sveiki! Panašu, kad jums patinka diskusija, tačiau dar nesate prisiregistravę prie paskyros."
-      value_prop: "Kai sukuriate paskyrą, mes tiksliai prisimename tai, ką perskaitėte, todėl visada grįšite ten, kur baigėte. Taip pat gausite pranešimus čia ir el. paštu, kai kas nors jums atsakys. Ir jūs galite pamėgti įrašus, kad pasidalytumėte meile. :heartpulse:"
     summary:
       enabled_description: "Tu šiuo metu žiūri temos aprašymą: pačius įdomiausius įrašus, kuriuos išrinko bendruomenė."
       enable: "Apibendrinkite šią Temą"
@@ -1876,7 +1877,6 @@ lt:
       create_shared_draft: "Sukurti bendrinamą juodraštį"
       edit_shared_draft: "Redaguoti bendrinamą juodraštį"
       title: "Arba paspauskite %{modifier}Enter"
-      users_placeholder: "Pridėti vartotoją"
       title_placeholder: "Apibūdinkite apie ka bus ši diskusija vienu trumpu sakiniu"
       title_or_link_placeholder: "Įveskite pavadinimą, arba įklijuokite nuorodą čia"
       edit_reason_placeholder: "kodėl jūs redaguojate?"
@@ -1970,6 +1970,7 @@ lt:
       empty: "Pranešimų nėra"
       post_approved: "Jūsų įrašas buvo patvirtintas"
       reviewable_items: "elementus, kuriuos reikia peržiūrėti"
+      watching_first_post_label: "Nauja tema"
       mentioned: "<span>%{username}</span> %{description}"
       group_mentioned: "<span>%{username}</span> %{description}"
       quoted: "<span>%{username}</span> %{description}"
@@ -1984,6 +1985,12 @@ lt:
         few: "<span class='multi-user'>%{username}, %{username2}ir %{count} kiti</span> %{description}"
         many: "<span class='multi-user'>%{username}, %{username2} ir %{count}kitų</span> %{description}"
         other: "<span class='multi-user'>%{username}, %{username2} ir %{count}kitų</span> %{description}"
+      liked_by_2_users: "%{username}, %{username2}"
+      liked_by_multiple_users:
+        one: "%{username}, %{username2} ir dar %{count}"
+        few: "%{username}, %{username2}ir %{count} kiti"
+        many: "%{username}, %{username2} ir %{count}kitų"
+        other: "%{username}, %{username2} ir %{count}kitų"
       liked_consolidated: "<span>%{username}</span> %{description}"
       private_message: "<span>%{username}</span> %{description}"
       invited_to_private_message: "<p><span>%{username}</span> %{description}"
@@ -3193,6 +3200,7 @@ lt:
       full: "Kurti / Atsakyti / Peržiūrėti"
       create_post: "Atsakyti / Peržiūrėti"
       readonly: "Peržiūrėti"
+    preloader_text: "Kraunama"
     lightbox:
       download: "atsisiųsti"
       open: "originalus vaizdas"
@@ -3273,7 +3281,6 @@ lt:
         edit: "%{shortcut} Redaguoti pranešimą"
         delete: "%{shortcut} Ištrinti pranešimą"
         mark_muted: "%{shortcut} Nutildyti pranešimą"
-        mark_regular: "%{shortcut} Nuolatinės (default) temos"
         mark_tracking: "%{shortcut} Sekti temą"
         mark_watching: "%{shortcut} Stebėti temą"
         print: "%{shortcut} Spausdinti temą"
@@ -3384,7 +3391,7 @@ lt:
           title: "Seku"
           description: "Su šia žyma automatiškai stebėsite visas temas. Šalia temos bus rodomas neskaitytų ir naujų įrašų skaičius."
         regular:
-          title: "Nuolatinės"
+          title: "Įprastas"
           description: "Būsite informuoti, jei kas nors paminės jūsų @vardą ar atsakys į jūsų įrašą."
         muted:
           title: "Nutildyta"
@@ -3481,15 +3488,36 @@ lt:
     second_factor_auth:
       redirect_after_success: "Antrojo veiksnio autentifikavimas sėkmingas. Peradresavimas į ankstesnį puslapį…"
     sidebar:
-      unread_count: "%{count} neperskaitytas"
-      new_count: "%{count} nauja"
+      unread_count:
+        one: "%{count} neperskaitytas"
+        few: "%{count} neperskaitytų"
+        many: "%{count} neperskaitytas"
+        other: "%{count} neperskaitytas"
+      new_count:
+        one: "%{count} nauja"
+        few: "%{count} nauji"
+        many: "%{count} nauja"
+        other: "%{count} nauja"
       sections:
+        messages:
+          header_link_text: "Žinutės"
+          links:
+            inbox: "Pranešimų dežutė"
+            sent: "Išsiųsti"
+            new: "Naujos"
+            new_with_count: "Naujas (%{count})"
+            unread: "Neperskaitytos"
+            unread_with_count: "Neperskaitytas (%{count})"
+            archive: "Archyvuoti"
+        tags:
+          header_link_title: "visos žymos"
+          header_link_text: "Žymos"
         categories:
           header_link_title: "visos kategorijos"
           header_link_text: "Kategorijos"
-        topics:
+        community:
           header_link_title: "pradinis"
-          header_link_text: "Temos"
+          header_link_text: "Bendruomenė"
           header_action_title: "sukurti naują temą"
           links:
             everything:
@@ -3498,8 +3526,11 @@ lt:
             tracked:
               content: "Sekami"
               title: "Visos stebimos temos"
-            bookmarked:
-              content: "Pažymėta"
+            groups:
+              content: "Grupės"
+              title: "Visos grupės"
+            users:
+              content: "Vartotojai"
             my_posts:
               content: "Mano Įrašai"
   admin_js:

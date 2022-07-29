@@ -1,13 +1,13 @@
 # coding: utf-8
 # frozen_string_literal: true
 
-describe ApplicationHelper do
+RSpec.describe ApplicationHelper do
 
   describe "preload_script" do
     def preload_link(url)
       <<~HTML
           <link rel="preload" href="#{url}" as="script">
-          <script src="#{url}"></script>
+          <script defer src="#{url}"></script>
       HTML
     end
 
@@ -31,9 +31,9 @@ describe ApplicationHelper do
       set_cdn_url "https://awesome.com"
 
       helper.request.env["HTTP_ACCEPT_ENCODING"] = 'br'
-      link = helper.preload_script('application')
+      link = helper.preload_script('discourse')
 
-      expect(link).to eq(preload_link("https://awesome.com/brotli_asset/#{EmberCli.transform_name("application")}.js"))
+      expect(link).to eq(preload_link("https://awesome.com/brotli_asset/discourse.js"))
     end
 
     context "with s3 CDN" do
@@ -47,41 +47,41 @@ describe ApplicationHelper do
 
       it "deals correctly with subfolder" do
         set_subfolder "/community"
-        expect(helper.preload_script("application")).to include("https://s3cdn.com/assets/#{EmberCli.transform_name("application")}.js")
+        expect(helper.preload_script("discourse")).to include("https://s3cdn.com/assets/discourse.js")
       end
 
       it "replaces cdn URLs with s3 cdn subfolder paths" do
         global_setting :s3_cdn_url, 'https://s3cdn.com/s3_subpath'
         set_cdn_url "https://awesome.com"
         set_subfolder "/community"
-        expect(helper.preload_script("application")).to include("https://s3cdn.com/s3_subpath/assets/#{EmberCli.transform_name("application")}.js")
+        expect(helper.preload_script("discourse")).to include("https://s3cdn.com/s3_subpath/assets/discourse.js")
       end
 
       it "returns magic brotli mangling for brotli requests" do
 
         helper.request.env["HTTP_ACCEPT_ENCODING"] = 'br'
-        link = helper.preload_script('application')
+        link = helper.preload_script('discourse')
 
-        expect(link).to eq(preload_link("https://s3cdn.com/assets/#{EmberCli.transform_name("application")}.br.js"))
+        expect(link).to eq(preload_link("https://s3cdn.com/assets/discourse.br.js"))
       end
 
       it "gives s3 cdn if asset host is not set" do
-        link = helper.preload_script('application')
+        link = helper.preload_script('discourse')
 
-        expect(link).to eq(preload_link("https://s3cdn.com/assets/#{EmberCli.transform_name("application")}.js"))
+        expect(link).to eq(preload_link("https://s3cdn.com/assets/discourse.js"))
       end
 
       it "can fall back to gzip compression" do
         helper.request.env["HTTP_ACCEPT_ENCODING"] = 'gzip'
-        link = helper.preload_script('application')
-        expect(link).to eq(preload_link("https://s3cdn.com/assets/#{EmberCli.transform_name("application")}.gz.js"))
+        link = helper.preload_script('discourse')
+        expect(link).to eq(preload_link("https://s3cdn.com/assets/discourse.gz.js"))
       end
 
       it "gives s3 cdn even if asset host is set" do
         set_cdn_url "https://awesome.com"
-        link = helper.preload_script('application')
+        link = helper.preload_script('discourse')
 
-        expect(link).to eq(preload_link("https://s3cdn.com/assets/#{EmberCli.transform_name("application")}.js"))
+        expect(link).to eq(preload_link("https://s3cdn.com/assets/discourse.js"))
       end
 
       it "gives s3 cdn but without brotli/gzip extensions for theme tests assets" do
@@ -161,7 +161,7 @@ describe ApplicationHelper do
 
     context "when dark theme is present" do
       before do
-        dark_theme = Theme.create(
+        _dark_theme = Theme.create(
           name: "Dark",
           user_id: -1,
           color_scheme_id: ColorScheme.find_by(base_scheme_id: "Dark").id
@@ -418,6 +418,15 @@ describe ApplicationHelper do
   end
 
   describe 'crawlable_meta_data' do
+
+    it 'Supports ASCII URLs with odd chars' do
+      result = helper.crawlable_meta_data(
+        url: (+"http://localhost/ión").force_encoding("ASCII-8BIT").freeze
+     )
+
+      expect(result).to include("ión")
+    end
+
     context "opengraph image" do
       it 'returns the correct image' do
         SiteSetting.opengraph_image = Fabricate(:upload,

@@ -1583,7 +1583,7 @@ RSpec.describe TopicsController do
               put "/t/#{topic.slug}/#{topic.id}.json", params: {
                 tags: [tag.name]
               }
-            end.to change { topic.reload.first_post.revisions.count }.by(0)
+            end.not_to change { topic.reload.first_post.revisions.count }
 
             expect(response.status).to eq(200)
           end
@@ -2362,7 +2362,7 @@ RSpec.describe TopicsController do
 
         body = response.body
 
-        expect(body).to have_tag(:script, src: "/assets/#{EmberCli.transform_name("application")}.js")
+        expect(body).to have_tag(:script, src: "/assets/discourse.js")
         expect(body).to have_tag(:meta, with: { name: 'fragment' })
       end
     end
@@ -2638,7 +2638,7 @@ RSpec.describe TopicsController do
           body = response.body
 
           expect(response.status).to eq(200)
-          expect(body).to have_tag(:script, with: { src: "/assets/#{EmberCli.transform_name("application")}.js" })
+          expect(body).to have_tag(:script, with: { src: "/assets/discourse.js" })
           expect(body).to_not have_tag(:meta, with: { name: 'fragment' })
         end
       end
@@ -2653,7 +2653,7 @@ RSpec.describe TopicsController do
 
           body = response.body
 
-          expect(body).to have_tag(:script, with: { src: "/assets/#{EmberCli.transform_name("application")}.js" })
+          expect(body).to have_tag(:script, with: { src: "/assets/discourse.js" })
           expect(body).to have_tag(:meta, with: { name: 'fragment' })
         end
 
@@ -4306,7 +4306,7 @@ RSpec.describe TopicsController do
 
         body = response.body
 
-        expect(body).to have_tag(:script, with: { src: "/assets/#{EmberCli.transform_name("application")}.js" })
+        expect(body).to have_tag(:script, with: { src: "/assets/discourse.js" })
         expect(body).to have_tag(:meta, with: { name: 'fragment' })
       end
     end

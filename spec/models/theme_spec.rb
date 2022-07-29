@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Theme do
+RSpec.describe Theme do
   after do
     Theme.clear_cache!
   end
@@ -252,7 +252,7 @@ HTML
       expect(javascript_cache.content).to include("var x = 1;")
     end
 
-    it "wraps constants calls in a readOnlyError function" do
+    it "replaces const writes with _readOnlyError function call" do
       html = <<HTML
         <script type='text/discourse-plugin' version='0.1'>
           const x = 1;
@@ -263,7 +263,7 @@ HTML
       baked, javascript_cache = transpile(html)
       expect(baked).to include(javascript_cache.url)
       expect(javascript_cache.content).to include('var x = 1;')
-      expect(javascript_cache.content).to include('x = (_readOnlyError("x"), 2);')
+      expect(javascript_cache.content).to include('2, _readOnlyError("x");')
     end
   end
 
@@ -282,7 +282,7 @@ HTML
       freeze_time (SiteSetting.clean_orphan_uploads_grace_period_hours + 1).hours.from_now
       Jobs::CleanUpUploads.new.execute(nil)
 
-      expect(Upload.where(id: upload.id)).to be_exist
+      expect(Upload.where(id: upload.id)).to be_exists
 
       # no error for theme field
       theme.reload
