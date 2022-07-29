@@ -497,6 +497,10 @@ login:
     default: true
     hidden: true
   enable_discourse_connect_provider: false
+  discourse_connect_provider_redirect_url: 
+    client: true
+    default: ""
+    regex: '^https?:\/\/.+[^\/]$'
   discourse_connect_provider_secrets:
     default: ""
     type: list

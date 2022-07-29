@@ -30,6 +30,7 @@ const ORIGINAL_SETTINGS = {
   enable_facebook_logins: true,
   enable_github_logins: true,
   enable_discourse_connect: false,
+  discourse_connect_provider_redirect_url: "",
   min_username_length: 3,
   max_username_length: 20,
   min_password_length: 8,
