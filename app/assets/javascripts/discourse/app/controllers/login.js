@@ -131,7 +131,7 @@ export default Controller.extend(ModalFunctionality, {
   showLoginWithEmailLink(canLoginLocalWithEmail) {
     return canLoginLocalWithEmail;
   },
-
+ 
   actions: {
     login() {
       if (this.loginDisabled) {
@@ -224,7 +224,7 @@ export default Controller.extend(ModalFunctionality, {
             const shouldRedirect = window.location.search.includes("sso=")
             const query = window.location.search
             if (shouldRedirect) {
-              window.location.assign("http://localhost:8888/community/login");
+              window.location.assign(this.siteSettings.discourse_connect_provider_redirect_url);
               return;
             }
             if (ssoDestinationUrl) {
